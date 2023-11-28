@@ -1,3 +1,6 @@
+from flask_cors import CORS
+CORS(app)
+
 from flask import Flask
 from flask import render_template
 from flask import request
