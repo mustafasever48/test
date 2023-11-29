@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
 import mysql.connector
 from datetime import datetime, timedelta
+
 app = Flask(__name__)
 CORS(app)
 
@@ -26,18 +27,20 @@ def check_warranty():
     if serial_number is None:
         return jsonify({'message': 'Serial number is missing'})
 
-    cursor.execute("SELECT * FROM Product WHERE Serial_Number = %s", (serial_number.upper(),))
+    try:
+        cursor.execute("SELECT * FROM Product WHERE Serial_Number = %s", (serial_number.upper(),))
+        product = cursor.fetchone()
 
-    product = cursor.fetchone()
-
-    if product:
-        warranty_expiration_date = product['purchase_date'] + timedelta(days=365 * 2)
-        return jsonify({
-            'message': 'Warranty Information',
-            'warranty_status': 'In Warranty' if datetime.utcnow() <= warranty_expiration_date else 'Out of Warranty'
-        })
-    else:
-        return jsonify({'message': 'Product not found'})
+        if product:
+            warranty_expiration_date = product['purchase_date'] + timedelta(days=365 * 2)
+            return jsonify({
+                'message': 'Warranty Information',
+                'warranty_status': 'In Warranty' if datetime.utcnow() <= warranty_expiration_date else 'Out of Warranty'
+            })
+        else:
+            return jsonify({'message': 'Product not found'})
+    except Exception as e:
+        return jsonify({'message': f'Error executing SQL query: {str(e)}'})
 
 if __name__ == "__main__":
      app.run(host='0.0.0.0', port='8080', debug=True, ssl_context=('/etc/letsencrypt/live/msubuntu.northeurope.cloudapp.azure.com/cert.pem','/etc/letsencrypt/live/msubuntu.northeurope.cloudapp.azure.com/privkey.pem'))
