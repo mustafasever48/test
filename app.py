@@ -15,10 +15,6 @@ mysql = mysql.connector.connect(
 
 cursor = mysql.cursor(dictionary=True)
 
-@app.route('/')
-def customer_page():
-    return render_template('customer_page.html')
-
 @app.route('/check_warranty', methods=['POST'])
 def check_warranty():
     serial_number = request.form.get('serial_number')
