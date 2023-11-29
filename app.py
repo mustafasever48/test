@@ -35,8 +35,8 @@ cursor = mysql.cursor(dictionary=True)
 
 @app.route('/check_warranty', methods=['POST'])
 def check_warranty():
-    serial_number = request.form.get('serial_number')
-    model_name = request.form.get('model_name')
+    serial_number = request.form.get('Serial_Number')
+     model_name = request.form.get('Model_ID')
     
     if serial_number is None:
         return jsonify({'message': 'Serial number is missing'})
