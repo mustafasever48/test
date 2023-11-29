@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
 import mysql.connector
 from datetime import datetime, timedelta
@@ -33,17 +33,20 @@ dictConfig({
 
 cursor = mysql.cursor(dictionary=True)
 
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 @app.route('/check_warranty', methods=['POST'])
 def check_warranty():
+    brand_name = request.form.get('Brand_Name')
     serial_number = request.form.get('Serial_Number')
-    brand_name = request.form.get('Brand_ID')
-
-    if serial_number is None or serial_number.strip() == '':
-        return jsonify({'message': 'Serial number is missing'})
+    
+    if brand_name is None or serial_number is None or serial_number.strip() == '':
+        return jsonify({'message': 'Brand name or serial number is missing'})
 
     try:
-        cursor.execute("SELECT * FROM Product WHERE Serial_Number = %s", (serial_number.upper(),))
+        cursor.execute("SELECT * FROM Product WHERE Brand_Name = %s AND Serial_Number = %s", (brand_name, serial_number.upper()))
         product = cursor.fetchone()
 
         if product:
