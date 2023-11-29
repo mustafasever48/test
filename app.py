@@ -25,8 +25,7 @@ def check_warranty():
     serial_number = request.form.get('serial_number')
     model_name = request.form.get('model_name')
     
-    cursor.execute("SELECT * FROM Product WHERE Serial_Number = %s", (serial_number.upper(),))
-
+    cursor.execute("SELECT * FROM Product WHERE serial_number = %s", (serial_number.upper(),))
     product = cursor.fetchone()
 
     if product:
