@@ -32,6 +32,11 @@ dictConfig({
 })
 
 cursor = mysql.cursor(dictionary=True)
+@app.route('/')
+def index():
+    cursor.execute("SELECT * FROM Brand")
+    brands = cursor.fetchall()
+    return render_template('index.html', brands=brands)
 
 @app.route('/')
 def index():
