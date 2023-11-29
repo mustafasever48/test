@@ -53,7 +53,7 @@ def check_warranty():
             })
         else:
             return jsonify({'message': 'Product not found'})
-    except Exception as e:
+    except mysql.connector.Error as e:
         return jsonify({'message': f'Error executing SQL query: {str(e)}'})
 
 if __name__ == "__main__":
