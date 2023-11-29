@@ -12,8 +12,26 @@ mysql = mysql.connector.connect(
     host='127.0.0.1',
     database='rma'
 )
+from logging.config import dictConfig
+
+dictConfig({
+    'version': 1,
+    'formatters': {'default': {
+        'format': '[%(asctime)s] %(levelname)s in %(module)s: %(message)s',
+    }},
+    'handlers': {'wsgi': {
+        'class': 'logging.StreamHandler',
+        'stream': 'ext://flask.logging.wsgi_errors_stream',
+        'formatter': 'default'
+    }},
+    'root': {
+        'level': 'INFO',
+        'handlers': ['wsgi']
+    }
+})
 
 cursor = mysql.cursor(dictionary=True)
+
 
 @app.route('/check_warranty', methods=['POST'])
 def check_warranty():
