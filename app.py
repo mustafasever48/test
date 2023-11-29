@@ -1,17 +1,12 @@
-from flask import Flask, render_template, request, jsonify
-from flask_cors import CORS
+from flask import Flask
+from flask import render_template
+from flask import request
 import mysql.connector
-from datetime import datetime, timedelta
-
-app = Flask(__name__)
-CORS(app)
-
-mysql = mysql.connector.connect(
-    user='web',
-    password='webPass',
-    host='127.0.0.1',
-    database='rma'
-)
+from flask_cors import CORS
+import json
+mysql = mysql.connector.connect(user='web', password='webPass',
+  host='127.0.0.1',
+  database='student')
 
 from logging.config import dictConfig
 
@@ -30,41 +25,53 @@ dictConfig({
         'handlers': ['wsgi']
     }
 })
+app = Flask(__name__)
+CORS(app)
+# My SQL Instance configurations
+# Change the HOST IP and Password to match your instance configurations
 
-cursor = mysql.cursor(dictionary=True)
+@app.route("/test")#URL leading to method
+def test(): # Name of the method
+ return("Hello World!<BR/>THIS IS ANOTHER TEST!") #indent this line
 
-@app.route('/')
-def index():
-    cursor.execute("SELECT * FROM Brand")
-    brands = cursor.fetchall()
-    return render_template('index.html', brands=brands)
+@app.route("/yest")#URL leading to method
+def yest(): # Name of the method
+ return("Hello World!<BR/>THIS IS YET ANOTHER TEST!") #indent this line
 
-@app.route('/check_warranty', methods=['POST'])
-def check_warranty():
-    brand_name = request.form.get('Brand_Name')
-    serial_number = request.form.get('Serial_Number')
-    
-    if brand_name is None or serial_number is None or serial_number.strip() == '':
-        return jsonify({'message': 'Brand name or serial number is missing'})
+@app.route("/add", methods=['GET', 'POST']) #Add Student
+def add():
+  if request.method == 'POST':
+    name = request.form['name']
+    email = request.form['email']
+    print(name,email)
+    cur = mysql.cursor() #create a connection to the SQL instance
+    s='''INSERT INTO students(studentName, email) VALUES('{}','{}');'''.format(name,email)
+    app.logger.info(s)
+    cur.execute(s)
+    mysql.commit()
+  else:
+    return render_template('add.html')
 
-    try:
-        cursor.execute("SELECT * FROM Product WHERE Brand_Name = %s AND Serial_Number = %s", (brand_name, serial_number.upper()))
-        product = cursor.fetchone()
-
-        print('Product:', product)
-        
-        if product:
-            purchase_date_str = product['ProductSoldDate']
-            purchase_date = datetime.strptime(purchase_date_str, '%Y-%m-%d')
-            warranty_expiration_date = purchase_date + timedelta(days=365 * 2)
-            return jsonify({
-                'message': 'Warranty Information',
-                'warranty_status': 'In Warranty' if datetime.utcnow() <= warranty_expiration_date else 'Out of Warranty'
-            })
-        else:
-            return jsonify({'message': 'Product not found'})
-    except mysql.connector.Error as err:
-        return jsonify({'message': f'Error executing SQL query: {str(err)}'})
-
+  return '{"Result":"Success"}'
+@app.route("/") #Default - Show Data
+def hello(): # Name of the method
+  cur = mysql.cursor() #create a connection to the SQL instance
+  cur.execute('''SELECT * FROM students''') # execute an SQL statment
+  rv = cur.fetchall() #Retreive all rows returend by the SQL statment
+  Results=[]
+  for row in rv: #Format the Output Results and add to return string
+    Result={}
+    Result['Name']=row[0].replace('\n',' ')
+    Result['Email']=row[1]
+    Result['ID']=row[2]
+    Results.append(Result)
+  response={'Results':Results, 'count':len(Results)}
+  ret=app.response_class(
+    response=json.dumps(response),
+    status=200,
+    mimetype='application/json'
+  )
+  return ret #Return the data in a string format
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port='8080', debug=True, ssl_context=('/etc/letsencrypt/live/msubuntu.northeurope.cloudapp.azure.com/cert.pem', '/etc/letsencrypt/live/msubuntu.northeurope.cloudapp.azure.com/privkey.pem'))
+  
+  app.run(host='0.0.0.0',port='8080', ssl_context=('/etc/letsencrypt/live/msubuntu.northeurope.cloudapp.azure.com/cert.pem','/etc/letsencrypt/live/msubuntu.northeurope.cloudapp.azure.com/privkey.pem')) #Run the flask app at port 8080
