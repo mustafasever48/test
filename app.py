@@ -1,9 +1,7 @@
 from flask import Flask, render_template, request, jsonify
-import mysql.connector
 from flask_cors import CORS
+import mysql.connector
 from datetime import datetime, timedelta
-import json
-
 app = Flask(__name__)
 CORS(app)
 
@@ -25,6 +23,9 @@ def check_warranty():
     serial_number = request.form.get('serial_number')
     model_name = request.form.get('model_name')
     
+    if serial_number is None:
+        return jsonify({'message': 'Serial number is missing'})
+
     cursor.execute("SELECT * FROM Product WHERE Serial_Number = %s", (serial_number.upper(),))
 
     product = cursor.fetchone()
