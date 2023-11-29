@@ -7,7 +7,6 @@ import json
 app = Flask(__name__)
 CORS(app)
 
-
 mysql = mysql.connector.connect(
     user='web',
     password='webPass',
@@ -15,21 +14,18 @@ mysql = mysql.connector.connect(
     database='rma'
 )
 
-
 cursor = mysql.cursor(dictionary=True)
-
 
 @app.route('/')
 def customer_page():
     return render_template('customer_page.html')
-
 
 @app.route('/check_warranty', methods=['POST'])
 def check_warranty():
     serial_number = request.form.get('serial_number')
     model_name = request.form.get('model_name')
 
-    cursor.execute("SELECT * FROM product WHERE serial_number = %s", (serial_number,))
+    cursor.execute("SELECT * FROM Product WHERE serial_number = %s", (serial_number,))
     product = cursor.fetchone()
 
     if product:
@@ -41,6 +37,5 @@ def check_warranty():
     else:
         return jsonify({'message': 'Product not found'})
 
-
 if __name__ == "__main__":
-     app.run(host='0.0.0.0',port='8080',debug=True, ssl_context=('/etc/letsencrypt/live/msubuntu.northeurope.cloudapp.azure.com/cert.pem','/etc/letsencrypt/live/msubuntu.northeurope.cloudapp.azure.com/privkey.pem')) #Run the flask app at port 8080
+     app.run(host='0.0.0.0', port='8080', debug=True, ssl_context=('/etc/letsencrypt/live/msubuntu.northeurope.cloudapp.azure.com/cert.pem','/etc/letsencrypt/live/msubuntu.northeurope.cloudapp.azure.com/privkey.pem'))
