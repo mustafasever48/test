@@ -4,6 +4,9 @@ from flask import request
 import mysql.connector
 from flask_cors import CORS
 import json
+from flask_sqlalchemy import SQLAlchemy
+
+
 
 
 app = Flask(__name__)
