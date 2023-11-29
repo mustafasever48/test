@@ -1,7 +1,7 @@
-from flask import Flask, request, jsonify
+from flask import Flask, render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-from datetime import datetime
+from datetime import datetime, timedelta
 
 app = Flask(__name__)
 CORS(app)
@@ -34,6 +34,10 @@ class Customer(db.Model):
     phone = db.Column(db.String(20))
     email = db.Column(db.String(100))
     products = db.relationship('Product', backref='customer', lazy=True)
+class Sold(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'), nullable=False)
+
 
 class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -42,6 +46,7 @@ class Product(db.Model):
     customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'), nullable=False)
     purchase_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     rma = db.relationship('RMA', backref='product', lazy=True)
+    sold_id = db.Column(db.Integer, db.ForeignKey('sold.id'), nullable=False)
 
 class RMA(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -59,3 +64,29 @@ class Shipping(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     rma_id = db.Column(db.Integer, db.ForeignKey('rma.id'), nullable=False)
     shipping_date = db.Column(db.DateTime)
+
+# Flask uygulamasının rotalarını aşağıdaki gibi güncelleyebilirsiniz
+
+@app.route('/')
+def customer_page():
+    return render_template('customer_page.html')
+
+@app.route('/check_warranty', methods=['POST'])
+def check_warranty():
+    serial_number = request.form.get('serial_number')
+    model_name = request.form.get('model_name')
+
+    product = Product.query.filter_by(serial_number=serial_number).first()
+    if product:
+        warranty_expiration_date = product.purchase_date + timedelta(days=365 * 2)  # 2 yıllık garanti
+        return jsonify({
+            'message': 'Warranty Information',
+            'warranty_status': 'In Warranty' if datetime.utcnow() <= warranty_expiration_date else 'Out of Warranty'
+        })
+    else:
+        return jsonify({'message': 'Product not found'})
+
+# Diğer rotaları ve işlevleri de benzer şekilde güncelleyebilirsiniz
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port='8080')
