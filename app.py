@@ -49,6 +49,8 @@ def check_warranty():
         cursor.execute("SELECT * FROM Product WHERE Brand_Name = %s AND Serial_Number = %s", (brand_name, serial_number.upper()))
         product = cursor.fetchone()
 
+        print('Product:', product)
+        
         if product:
             purchase_date_str = product['ProductSoldDate']
             purchase_date = datetime.strptime(purchase_date_str, '%Y-%m-%d')
