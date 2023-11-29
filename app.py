@@ -1,78 +1,61 @@
-from flask import Flask
-from flask import render_template
-from flask import request
-import mysql.connector
+from flask import Flask, request, jsonify
+from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-import json
-mysql = mysql.connector.connect(user='web', password='webPass',
-  host='127.0.0.1',
-  database='student')
+from datetime import datetime
 
-from logging.config import dictConfig
-
-dictConfig({
-    'version': 1,
-    'formatters': {'default': {
-        'format': '[%(asctime)s] %(levelname)s in %(module)s: %(message)s',
-    }},
-    'handlers': {'wsgi': {
-        'class': 'logging.StreamHandler',
-        'stream': 'ext://flask.logging.wsgi_errors_stream',
-        'formatter': 'default'
-    }},
-    'root': {
-        'level': 'INFO',
-        'handlers': ['wsgi']
-    }
-})
 app = Flask(__name__)
 CORS(app)
-# My SQL Instance configurations
-# Change the HOST IP and Password to match your instance configurations
 
-@app.route("/test")#URL leading to method
-def test(): # Name of the method
- return("Hello World!<BR/>THIS IS ANOTHER TEST!") #indent this line
+# MySQL bağlantısı için gerekli bilgiler
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://web:webPass@127.0.0.1/rma'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
 
-@app.route("/yest")#URL leading to method
-def yest(): # Name of the method
- return("Hello World!<BR/>THIS IS YET ANOTHER TEST!") #indent this line
+class Brand(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255), unique=True, nullable=False)
+    models = db.relationship('Model', backref='brand', lazy=True)
 
-@app.route("/add", methods=['GET', 'POST']) #Add Student
-def add():
-  if request.method == 'POST':
-    name = request.form['name']
-    email = request.form['email']
-    print(name,email)
-    cur = mysql.cursor() #create a connection to the SQL instance
-    s='''INSERT INTO students(studentName, email) VALUES('{}','{}');'''.format(name,email)
-    app.logger.info(s)
-    cur.execute(s)
-    mysql.commit()
-  else:
-    return render_template('add.html')
+class Model(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255), nullable=False)
+    brand_id = db.Column(db.Integer, db.ForeignKey('brand.id'), nullable=False)
+    products = db.relationship('Product', backref='model', lazy=True)
 
-  return '{"Result":"Success"}'
-@app.route("/") #Default - Show Data
-def hello(): # Name of the method
-  cur = mysql.cursor() #create a connection to the SQL instance
-  cur.execute('''SELECT * FROM students''') # execute an SQL statment
-  rv = cur.fetchall() #Retreive all rows returend by the SQL statment
-  Results=[]
-  for row in rv: #Format the Output Results and add to return string
-    Result={}
-    Result['Name']=row[0].replace('\n',' ')
-    Result['Email']=row[1]
-    Result['ID']=row[2]
-    Results.append(Result)
-  response={'Results':Results, 'count':len(Results)}
-  ret=app.response_class(
-    response=json.dumps(response),
-    status=200,
-    mimetype='application/json'
-  )
-  return ret #Return the data in a string format
-if __name__ == "__main__":
-  
-  app.run(host='0.0.0.0',port='8080', ssl_context=('/etc/letsencrypt/live/msubuntu.northeurope.cloudapp.azure.com/cert.pem','/etc/letsencrypt/live/msubuntu.northeurope.cloudapp.azure.com/privkey.pem')) #Run the flask app at port 8080
+class Technician(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255), nullable=False)
+    rmas = db.relationship('RMA', backref='technician', lazy=True)
 
+class Customer(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255), nullable=False)
+    address = db.Column(db.String(255))
+    phone = db.Column(db.String(20))
+    email = db.Column(db.String(100))
+    products = db.relationship('Product', backref='customer', lazy=True)
+
+class Product(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    serial_number = db.Column(db.String(100), unique=True, nullable=False)
+    model_id = db.Column(db.Integer, db.ForeignKey('model.id'), nullable=False)
+    customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'), nullable=False)
+    purchase_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    rma = db.relationship('RMA', backref='product', lazy=True)
+
+class RMA(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    inspection_start_date = db.Column(db.DateTime)
+    inspection_completion_date = db.Column(db.DateTime)
+    product_defect = db.Column(db.Text)
+    brand_id = db.Column(db.Integer, db.ForeignKey('brand.id'))
+    model_id = db.Column(db.Integer, db.ForeignKey('model.id'))
+    product_id = db.Column(db.Integer, db.ForeignKey('product.id'))
+    check_issue = db.Column(db.Text)
+    result_issue = db.Column(db.Text)
+    technician_id = db.Column(db.Integer, db.ForeignKey('technician.id'))
+
+class Shipping(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    rma_id = db.Column(db.Integer, db.ForeignKey('rma.id'), nullable=False)
+    shipping_date = db.Column(db.DateTime)
