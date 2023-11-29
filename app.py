@@ -1,15 +1,37 @@
-from flask import Flask, render_template, request, jsonify
-from flask_sqlalchemy import SQLAlchemy
+from flask import Flask
+from flask import render_template
+from flask import request
+import mysql.connector
 from flask_cors import CORS
-from datetime import datetime, timedelta
+import json
+
 
 app = Flask(__name__)
 CORS(app)
 
-# MySQL bağlantısı için gerekli bilgiler
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://web:webPass@127.0.0.1/rma'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
+mysql = mysql.connector.connect(user='web', password='webPass',
+  host='127.0.0.1',
+  database='rma')
+
+from logging.config import dictConfig
+
+dictConfig({
+    'version': 1,
+    'formatters': {'default': {
+        'format': '[%(asctime)s] %(levelname)s in %(module)s: %(message)s',
+    }},
+    'handlers': {'wsgi': {
+        'class': 'logging.StreamHandler',
+        'stream': 'ext://flask.logging.wsgi_errors_stream',
+        'formatter': 'default'
+    }},
+    'root': {
+        'level': 'INFO',
+        'handlers': ['wsgi']
+    }
+})
+app = Flask(__name__)
+CORS(app)
 
 class Brand(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -65,7 +87,7 @@ class Shipping(db.Model):
     rma_id = db.Column(db.Integer, db.ForeignKey('rma.id'), nullable=False)
     shipping_date = db.Column(db.DateTime)
 
-# Flask uygulamasının rotalarını aşağıdaki gibi güncelleyebilirsiniz
+
 
 @app.route('/')
 def customer_page():
@@ -86,7 +108,7 @@ def check_warranty():
     else:
         return jsonify({'message': 'Product not found'})
 
-# Diğer rotaları ve işlevleri de benzer şekilde güncelleyebilirsiniz
+
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port='8080')
