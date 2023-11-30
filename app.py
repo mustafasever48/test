@@ -67,8 +67,8 @@ def hello(): # Name of the method
   Results=[]
   for row in rv: #Format the Output Results and add to return string
     Result={}
-    Result['Brand_Name']=row[0].replace('\n',' ')
-    Result['Brand_ID ']=row[1]
+    Result['Brand_Name']=row[1].replace('\n',' ')
+    Result['Brand_ID ']=row[0]
 
 
     Results.append(Result)
