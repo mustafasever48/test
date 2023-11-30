@@ -25,19 +25,21 @@
                 <th>Warranty Status</th>
             </tr>
         </thead>
-        <tbody></tbody>
+        <tbody id="tableBody"></tbody>
     </table>
 
     <script>
         function fetchData() {
             const serialNumber = document.getElementById("serialNumber").value;
-
+            const today = new Date();
 
             document.getElementById("tab1").getElementsByTagName('tbody')[0].innerHTML = "";
 
             fetch(`https://msubuntu.northeurope.cloudapp.azure.com:8080/?serial_number=${serialNumber}`)
                 .then(response => response.json())
                 .then(data => {
+                    const tableBody = document.getElementById("tableBody");
+
                     data.Results.forEach(x => {
                         const newRow = document.createElement("tr");
                         const cells = ["Brand_Name", "Model_Name", "Product_Name", "Serial_Number", "ProductSoldDate", "WarrantyCheck"];
@@ -46,28 +48,19 @@
                             const newCell = document.createElement("td");
 
                             if (cell === "ProductSoldDate") {
-                                // Get today's date
-                                const today = new Date();
-                                // Get the product sold date
                                 const productSoldDate = new Date(x["ProductSoldDate"]);
-
-                                // Calculate warranty duration
-                                const warrantyCheck = (today - productSoldDate);
-
-                                // Determine warranty status
-                                newCell.textContent = warrantyCheck <= 730 ? 'Warranty is still valid.' : 'Warranty has expired.';
+                                const daysRemaining = Math.floor((productSoldDate - today) / (1000 * 60 * 60 * 24));
+                                newCell.textContent = daysRemaining <= 720 ? 'Warranty is still valid.' : 'Warranty has expired.';
                             } else if (cell === "WarrantyCheck") {
-                               
                                 newCell.textContent = x["WarrantyCheck"];
                             } else {
-                               
                                 newCell.textContent = x[cell];
                             }
 
                             newRow.appendChild(newCell);
                         });
 
-                        document.getElementById("tab1").getElementsByTagName('tbody')[0].appendChild(newRow);
+                        tableBody.appendChild(newRow);
                     });
                 })
                 .catch(error => console.error('Error:', error));
@@ -76,5 +69,3 @@
 </body>
 
 </html>
-
-
