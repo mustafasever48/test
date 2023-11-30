@@ -62,7 +62,7 @@ def hello():
         CASE
             WHEN TIMESTAMPDIFF(DAY, Product.ProductSoldDate, CURDATE()) <= 730 THEN 'Warranty is still valid.'
             ELSE 'Warranty has expired.'
-        END AS WarrantyStatus
+        END AS WarrantyCheck
         FROM Product
         JOIN Model ON Product.Model_ID = Model.Model_ID
         JOIN Brand ON Model.Brand_ID = Brand.Brand_ID
