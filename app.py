@@ -1,10 +1,7 @@
-from flask import Flask
-from flask import render_template
-from flask import request
+from flask import Flask, render_template, request
 import mysql.connector
 from flask_cors import CORS
 import json
-from datetime import datetime, timedelta
 
 mysql = mysql.connector.connect(
     user='web',
@@ -13,97 +10,77 @@ mysql = mysql.connector.connect(
     database='rma'
 )
 
-from logging.config import dictConfig
-
-dictConfig({
-    'version': 1,
-    'formatters': {'default': {
-        'format': '[%(asctime)s] %(levelname)s in %(module)s: %(message)s',
-    }},
-    'handlers': {'wsgi': {
-        'class': 'logging.StreamHandler',
-        'stream': 'ext://flask.logging.wsgi_errors_stream',
-        'formatter': 'default'
-    }},
-    'root': {
-        'level': 'INFO',
-        'handlers': ['wsgi']
-    }
-})
-
 app = Flask(__name__)
 CORS(app)
 
-
-
-@app.route("/add", methods=['GET', 'POST'])
-
+@app.route("/add", methods=['POST'])
 def add():
-  if request.method == 'POST':
-    brandName = request.form['Brand_Name']
-    print(brandName)
+    if request.method == 'POST':
+        brandName = request.form['Brand_Name']
+        modelName = request.form['Model_Name']
+        productName = request.form['Product_Name']
+        serialNumber = request.form['Serial_Number']
+
+        cur = mysql.cursor()
+
+        # Brand ekleme
+        brand_s = 'INSERT INTO Brand(Brand_Name) VALUES(%s);'
+        cur.execute(brand_s, (brandName,))
+        mysql.commit()
+
+        # Model ekleme
+        model_s = 'INSERT INTO Model(Model_Name) VALUES(%s);'
+        cur.execute(model_s, (modelName,))
+        mysql.commit()
+
+        # Product ekleme
+        product_s = 'INSERT INTO Product(Product_Name, Serial_Number) VALUES(%s, %s);'
+        cur.execute(product_s, (productName, serialNumber))
+        mysql.commit()
+
+        cur.close()
+
+    else:
+        return render_template('add.html')
+
+    return '{"Result":"Success"}'
+
+
+@app.route("/", methods=['GET'])
+def hello():
+    serial_number = request.args.get('serial_number', '')
+
     cur = mysql.cursor()
-    brand_s = '''INSERT INTO Brand(Brand_Name) VALUES('{}');'''.format(brandName)
-    app.logger.info(brand_s)
-    cur.execute(brand_s)
-    mysql.commit()
+
    
-    modelName = request.form['Model_Name']
-    print(modelName)
-    cur = mysql.cursor()
-    model_s = '''INSERT INTO Model(Model_Name) VALUES('{}');'''.format(modelName)
-    app.logger.info(model_s)
-    mysql.commit()
+    sql_query = '''
+        SELECT Brand.Brand_Name, Model.Model_Name, Product.Product_Name, Product.Serial_Number
+        FROM Product
+        JOIN Model ON Product.Model_ID = Model.Model_ID
+        JOIN Brand ON Model.Brand_ID = Brand.Brand_ID
+        WHERE Product.Serial_Number = %s;
+    '''
 
-    productName = request.form['Product_Name']
-    productSerial=request.form['Serial_Number']
-    print(productName,productSerial)
-    cur = mysql.cursor()
-    product_s = '''INSERT INTO Product(Product_Name,Serial_Number) VALUES('{}','{}');'''.format(productName,productSerial)
-    app.logger.info(product_s)
-    mysql.commit()
+    cur.execute(sql_query, (serial_number,))
+    rv = cur.fetchall()
 
-  else:
-    return render_template('add.html')
-    
-  return '{"Result":"Success"}'
+    Results = []
+    for row in rv:
+        Result = {}
+        Result['Brand_Name'] = row[0].replace('\n', ' ')
+        Result['Model_Name'] = row[1]
+        Result['Product_Name'] = row[2]
+        Result['Serial_Number'] = row[3]
+        Results.append(Result)
 
+    response = {'Results': Results, 'count': len(Results)}
+    ret = app.response_class(
+        response=json.dumps(response),
+        status=200,
+        mimetype='application/json'
+    )
 
-@app.route("/") #Default - Show Dat
-def hello(): # Name of the method
-  cur = mysql.cursor() #create a connection to the SQL instance
-  
-  
-  
-  cur.execute('''
-    SELECT Model.Model_Name, Brand.Brand_Name, Product.Product_Name, Product.Serial_Number
-    FROM Product
-    JOIN Model ON Product.Model_ID = Model.Model_ID
-    JOIN Brand ON Model.Brand_ID = Brand.Brand_ID
-              ''')
-
-  
-  rv = cur.fetchall() #Retreive all rows returend by the SQL statment
-  Results=[]
-  for row in rv: #Format the Output Results and add to return string
-    Result={}
-    Result['Brand_Name']=row[1].replace('\n',' ')
-    Result['Model_Name']=row[0]
-    Result['Product_Name']=row[2]
-    Result['Serial_Number']=row[3]
-
-
-
-    Results.append(Result)
-  response={'Results':Results, 'count':len(Results)}
-  ret=app.response_class(
-    response=json.dumps(response),
-    status=200,
-    mimetype='application/json'
-  )
-  return ret #Return the data in a string format
-
-
+    return ret
 
 
 if __name__ == "__main__":
