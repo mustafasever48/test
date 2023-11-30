@@ -24,17 +24,17 @@ def add():
 
         cur = mysql.cursor()
 
-        # Brand ekleme
+        
         brand_s = 'INSERT INTO Brand(Brand_Name) VALUES(%s);'
         cur.execute(brand_s, (brandName,))
         mysql.commit()
 
-        # Model ekleme
+        
         model_s = 'INSERT INTO Model(Model_Name) VALUES(%s);'
         cur.execute(model_s, (modelName,))
         mysql.commit()
 
-        # Product ekleme
+        
         product_s = 'INSERT INTO Product(Product_Name, Serial_Number, ProductSoldDate) VALUES(%s, %s, %s);'
         cur.execute(product_s, (productName, serialNumber,ProductSoldDate))
         mysql.commit()

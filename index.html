@@ -1,38 +1,55 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width">
-<title>Test API Client</title>
-<script>
-let doIt=()=>{
-  let tab=document.getElementById("tab1");
-  let rows=tab1.getElementsByTagName('tr');
-  fetch('https://msubuntu.northeurope.cloudapp.azure.com:8080/')
-    .then(response => response.json())
-    .then(data=>data.Results.forEach(  //.slice(0,3)
-      x=>{
-        let newRow=rows[0].cloneNode(true);
-        let divs=newRow.getElementsByTagName('td');
-        divs[0].innerHTML=x['Brand_Name'];
-        divs[1].innerHTML=x['Model_Name'];
-        divs[2].innerHTML=x['Product_Name'];
-        divs[3].innerHTML=x['Serial_Number'];
-
-        tab1.appendChild(newRow);
-      }
-    )
-  );
-}
-</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test API Client</title>
 </head>
 <body>
-<button onClick="doIt()">Press me</button>
-This is where the results turn up: <br/>
-<table id='tab1' bgcolor='blue'>
-<tr><td>Brand</td><td>Model</td><td>Product</td><td>Serial Number </td></tr>
-</table></body>
+    <label for="serialNumber">Enter Serial Number:</label>
+    <input type="text" id="serialNumber" name="serialNumber">
+    <button onclick="fetchData()">Get Data</button>
+
+    <br><br>
+
+    <table id="tab1" bgcolor="blue">
+        <thead>
+            <tr>
+                <th>Brand</th>
+                <th>Model</th>
+                <th>Product</th>
+                <th>Serial Number</th>
+                <th>Product Sold Date</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script>
+        function fetchData() {
+            const serialNumber = document.getElementById("serialNumber").value;
+
+            // Clear previous results
+            document.getElementById("tab1").getElementsByTagName('tbody')[0].innerHTML = "";
+
+            fetch(`https://msubuntu.northeurope.cloudapp.azure.com:8080/?serial_number=${serialNumber}`)
+                .then(response => response.json())
+                .then(data => {
+                    data.Results.forEach(x => {
+                        const newRow = document.createElement("tr");
+                        const cells = ["Brand_Name", "Model_Name", "Product_Name", "Serial_Number","ProductSoldDate"];
+
+                        cells.forEach(cell => {
+                            const newCell = document.createElement("td");
+                            newCell.textContent = x[cell];
+                            newRow.appendChild(newCell);
+                        });
+
+                        document.getElementById("tab1").getElementsByTagName('tbody')[0].appendChild(newRow);
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
 </html>
-
-
-
