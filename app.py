@@ -41,13 +41,18 @@ CORS(app)
 def add():
   if request.method == 'POST':
     brandName = request.form['Brand_Name']
-    
     print(brandName)
     cur = mysql.cursor()
-    
-    s = '''INSERT INTO Brand(Brand_Name) VALUES('{}');'''.format(brandName)
-    app.logger.info(s)
-    cur.execute(s)
+    brand_s = '''INSERT INTO Brand(Brand_Name) VALUES('{}');'''.format(brandName)
+    app.logger.info(brand_s)
+    cur.execute(brand_s)
+    mysql.commit()
+   
+    modelName = request.form['Model_Name']
+    print(modelName)
+    cur = mysql.cursor()
+    model_s = '''INSERT INTO Model(Model_Name) VALUES('{}');'''.format(modelName)
+    app.logger.info(brand_s)
     mysql.commit()
     
   else:
@@ -61,6 +66,7 @@ def hello(): # Name of the method
   cur = mysql.cursor() #create a connection to the SQL instance
   
   cur.execute('''SELECT * FROM Brand''') # execute an SQL statment
+  cur.execute('''SELECT * FROM Model''') # execute an SQL statment
 
   
   rv = cur.fetchall() #Retreive all rows returend by the SQL statment
@@ -68,7 +74,8 @@ def hello(): # Name of the method
   for row in rv: #Format the Output Results and add to return string
     Result={}
     Result['Brand_Name']=row[1].replace('\n',' ')
-    Result['Brand_ID ']=row[0]
+    Result['Model_Name']=row[1]
+
 
 
     Results.append(Result)
