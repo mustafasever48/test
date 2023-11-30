@@ -1,4 +1,4 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
@@ -16,6 +16,8 @@ let doIt=()=>{
         let divs=newRow.getElementsByTagName('td');
         divs[0].innerHTML=x['Brand_Name'];
         divs[1].innerHTML=x['Model_Name'];
+        divs[2].innerHTML=x['Product_Name'];
+        divs[3].innerHTML=x['Serial_Number'];
 
         tab1.appendChild(newRow);
       }
@@ -28,7 +30,9 @@ let doIt=()=>{
 <button onClick="doIt()">Press me</button>
 This is where the results turn up: <br/>
 <table id='tab1' bgcolor='blue'>
-<tr><td>Brand</td><td>Model</td><td>Email</td></tr>
+<tr><td>Brand</td><td>Model</td><td>Product</td><td>Serial Number </td></tr>
 </table></body>
 </html>
+
+
 
