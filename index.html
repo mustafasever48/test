@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Test API Client</title>
 </head>
+
 <body>
     <label for="serialNumber">Enter Serial Number:</label>
     <input type="text" id="serialNumber" name="serialNumber">
@@ -30,7 +32,7 @@
         function fetchData() {
             const serialNumber = document.getElementById("serialNumber").value;
 
-            
+
             document.getElementById("tab1").getElementsByTagName('tbody')[0].innerHTML = "";
 
             fetch(`https://msubuntu.northeurope.cloudapp.azure.com:8080/?serial_number=${serialNumber}`)
@@ -38,12 +40,12 @@
                 .then(data => {
                     data.Results.forEach(x => {
                         const newRow = document.createElement("tr");
-                        const cells = ["Brand_Name", "Model_Name", "Product_Name", "Serial_Number","ProductSoldDate","WarrantyCheck"];
+                        const cells = ["Brand_Name", "Model_Name", "Product_Name", "Serial_Number", "ProductSoldDate", "WarrantyCheck"];
 
                         cells.forEach(cell => {
                             const newCell = document.createElement("td");
 
-                            if (cell === "ProductSoldDate") {
+                            if (cell === "WarrantyCheck") {
                                 // Get today's date
                                 const today = new Date();
                                 // Get the product sold date
@@ -54,7 +56,11 @@
 
                                 // Determine warranty status
                                 newCell.textContent = warrantyCheck <= 730 ? 'Warranty is still valid.' : 'Warranty has expired.';
+                            } else if (cell === "WarrantyCheck") {
+                               
+                                newCell.textContent = x["WarrantyCheck"];
                             } else {
+                               
                                 newCell.textContent = x[cell];
                             }
 
@@ -68,7 +74,5 @@
         }
     </script>
 </body>
+
 </html>
-
-      
-
