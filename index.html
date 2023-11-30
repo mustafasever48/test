@@ -49,10 +49,10 @@
                                 // Get today's date
                                 const today = new Date();
                                 // Get the product sold date
-                                const productSoldDate = new Date(x[cell]);
+                                const productSoldDate = new Date(x["ProductSoldDate"]);
 
                                 // Calculate warranty duration
-                                const warrantyCheck = (today - productSoldDate) / (1000 * 60 * 60 * 24);
+                                const warrantyCheck = (today - productSoldDate);
 
                                 // Determine warranty status
                                 newCell.textContent = warrantyCheck <= 730 ? 'Warranty is still valid.' : 'Warranty has expired.';
@@ -76,3 +76,5 @@
 </body>
 
 </html>
+
+
