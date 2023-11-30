@@ -80,7 +80,6 @@ def hello(): # Name of the method
     FROM Product
     JOIN Model ON Product.Model_ID = Model.Model_ID
     JOIN Brand ON Model.Brand_ID = Brand.Brand_ID''')
-                 
 
   
   rv = cur.fetchall() #Retreive all rows returend by the SQL statment
