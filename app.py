@@ -73,9 +73,13 @@ def hello(): # Name of the method
   cur = mysql.cursor() #create a connection to the SQL instance
   
   
-  cur.execute('''SELECT Model.ModelName, Brand.Brand_Name FROM Model
-                 JOIN Brand ON Model.Brand_ID = Brand.Brand_ID''')  # compine two diff table with SQL JOIN 
   
+  cur.execute('''
+    SELECT Model.ModelName, Brand.Brand_Name, Product.Product_Name, Product.Serial_Number
+    FROM Product
+    JOIN Model ON Product.Model_ID = Model.Model_ID
+    JOIN Brand ON Model.Brand_ID = Brand.Brand_ID''')
+                 
 
   
   rv = cur.fetchall() #Retreive all rows returend by the SQL statment
@@ -85,6 +89,7 @@ def hello(): # Name of the method
     Result['Brand_Name']=row[1].replace('\n',' ')
     Result['Model_Name']=row[0]
     Result['Product_Name']=row[2]
+    Result['Serial_Number']=row[3]
 
 
 
