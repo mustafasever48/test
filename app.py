@@ -69,7 +69,7 @@ def add():
   return '{"Result":"Success"}'
 
 
-@app.route("/") #Default - Show Data
+@app.route("/") #Default - Show Dat
 def hello(): # Name of the method
   cur = mysql.cursor() #create a connection to the SQL instance
   
