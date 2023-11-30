@@ -41,44 +41,59 @@ CORS(app)
 def add():
   if request.method == 'POST':
     brandName = request.form['Brand_Name']
-    modelName = request.form['Mode_Name']
-    productName = request.form['Product_Name']
-    serialNumber = request.form['Serial_Number']
-    print(brandName,modelName,productName,serialNumber)
+    print(brandName)
     cur = mysql.cursor()
-    
-    s_brand = '''INSERT INTO Brand(Brand_Name) VALUES('{}');'''.format(brandName)
-    cur.execute(s_brand)
-    s_model = '''INSERT INTO Model(Model_Name) VALUES('{}');'''.format(modelName)
-    cur.execute(s_model)
+    brand_s = '''INSERT INTO Brand(Brand_Name) VALUES('{}');'''.format(brandName)
+    app.logger.info(brand_s)
+    cur.execute(brand_s)
     mysql.commit()
-    s_product = '''INSERT INTO Product(Product_Name, Serial_Number) VALUES('{}', {});'''.format(productName, serialNumber)
-    cur.execute(s_product, (product_name, serial_number))
+   
+    modelName = request.form['Model_Name']
+    print(modelName)
+    cur = mysql.cursor()
+    model_s = '''INSERT INTO Model(Model_Name) VALUES('{}');'''.format(modelName)
+    app.logger.info(model_s)
     mysql.commit()
+
+    productName = request.form['Product_Name']
+    productSerial=request.form['Serial_Number']
+    print(productName,productSerial)
+    cur = mysql.cursor()
+    product_s = '''INSERT INTO Product(Product_Name,Serial_Number) VALUES('{}','{}');'''.format(productName,productSerial)
+    app.logger.info(product_s)
+    mysql.commit()
+
   else:
     return render_template('add.html')
     
   return '{"Result":"Success"}'
-    
-    
 
 
-
-
-@app.route("/") #Default - Show Data
+@app.route("/") #Default - Show Dat
 def hello(): # Name of the method
   cur = mysql.cursor() #create a connection to the SQL instance
-  cur.execute('''SELECT * FROM Brand''') # execute an SQL statment
-  cur.execute('''SELECT * FROM Model''') # execute an SQL statment
-  cur.execute('''SELECT * FROM Product''') # execute an SQL statment
+  
+  
+  
+  cur.execute('''
+    SELECT Model.Model_Name, Brand.Brand_Name, Product.Product_Name, Product.Serial_Number
+    FROM Product
+    JOIN Model ON Product.Model_ID = Model.Model_ID
+    JOIN Brand ON Model.Brand_ID = Brand.Brand_ID
+              ''')
+
+  
   rv = cur.fetchall() #Retreive all rows returend by the SQL statment
   Results=[]
   for row in rv: #Format the Output Results and add to return string
     Result={}
-    Result['Brand']=row[0].replace('\n',' ')
-    Result['Model']=row[1]
-    Result['Product']=row[2]
-    Result['Serial Number']=row[3]
+    Result['Brand_Name']=row[1].replace('\n',' ')
+    Result['Model_Name']=row[0]
+    Result['Product_Name']=row[2]
+    Result['Serial_Number']=row[3]
+
+
+
     Results.append(Result)
   response={'Results':Results, 'count':len(Results)}
   ret=app.response_class(
