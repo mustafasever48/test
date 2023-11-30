@@ -34,7 +34,8 @@ dictConfig({
 app = Flask(__name__)
 CORS(app)
 
-cors = CORS(app, resources={r"/*": {"origins": "*"}, "supports_credentials": True})
+cors = CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
+
 
 
 
