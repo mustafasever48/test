@@ -30,7 +30,7 @@
         function fetchData() {
             const serialNumber = document.getElementById("serialNumber").value;
 
-            // Clear previous results
+            
             document.getElementById("tab1").getElementsByTagName('tbody')[0].innerHTML = "";
 
             fetch(`https://msubuntu.northeurope.cloudapp.azure.com:8080/?serial_number=${serialNumber}`)
