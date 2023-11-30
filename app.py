@@ -40,33 +40,34 @@ CORS(app)
 
 def add():
   if request.method == 'POST':
-        brandName = request.form['Brand_Name']
-        modelName = request.form['Model_Name']
-        productName = request.form['Product_Name']
-        serialNumber = request.form['Serial_Number']
+    brandName = request.form['Brand_Name']
+    print(brandName)
+    cur = mysql.cursor()
+    brand_s = '''INSERT INTO Brand(Brand_Name) VALUES('{}');'''.format(brandName)
+    app.logger.info(brand_s)
+    cur.execute(brand_s)
+    mysql.commit()
+   
+    modelName = request.form['Model_Name']
+    print(modelName)
+    cur = mysql.cursor()
+    model_s = '''INSERT INTO Model(Model_Name) VALUES('{}');'''.format(modelName)
+    app.logger.info(model_s)
+    mysql.commit()
 
-        cur = mysql.cursor()
+    productName = request.form['Product_Name']
+    productSerial=request.form['Serial_Number']
+    print(productName,productSerial)
+    cur = mysql.cursor()
+    product_s = '''INSERT INTO Product(Product_Name,Serial_Number) VALUES('{}','{}');'''.format(productName,productSerial)
+    app.logger.info(product_s)
+    mysql.commit()
 
-        # add from Brand Table
-        brand_s = '''INSERT INTO Brand(Brand_Name) VALUES('{}');'''.format(brandName)
-        app.logger.info(brand_s)
-        cur.execute(brand_s)
-        mysql.commit()
 
-        # add from Model table
-        model_s = '''INSERT INTO Model(Model_Name, Brand_ID) VALUES('{}', (SELECT Brand_ID FROM Brand WHERE Brand_Name = '{}'));'''.format(modelName, brandName)
-        app.logger.info(model_s)
-        cur.execute(model_s)
-        mysql.commit()
 
-        # add from Product table
-        product_s = '''INSERT INTO Product(Product_Name, Serial_Number, Model_ID)
-                       VALUES('{}', '{}', (SELECT Model_ID FROM Model WHERE Model_Name = '{}' AND Brand_ID = (SELECT Brand_ID FROM Brand WHERE Brand_Name = '{}')));'''.format(productName, serialNumber, modelName, brandName)
-        app.logger.info(product_s)
-        cur.execute(product_s)
-        mysql.commit()
 
-    
+ s='''INSERT INTO students(studeFcutntName, email) VALUES('{}','{}');'''.format(name,email)
+   
     
   else:
     return render_template('add.html')
