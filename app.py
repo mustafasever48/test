@@ -1,5 +1,4 @@
 from flask import Flask
-from flask_cors import CORS
 from flask import render_template
 from flask import request
 import mysql.connector
@@ -35,57 +34,59 @@ dictConfig({
 app = Flask(__name__)
 CORS(app)
 
-cors = CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
 
+@app.route("/add", methods=['GET', 'POST'])
 
-
-
-@app.route("/add", methods=['POST'])
 def add():
-    data = request.get_json()
-
-    brandName = data['Brand_Name']
-    modelID = data['Model_ID']
-    productName = data['Product_Name']
-    productSerial = data['Serial_Number']
-
+  if request.method == 'POST':
+    brandName = request.form['Brand_Name']
+    modelName = request.form['Mode_Name']
+    productName = request.form['Product_Name']
+    serialNumber = request.form['Serial_Number']
+    print(brandName,modelName,productName,serialNumber)
     cur = mysql.cursor()
-
-    brand_s = f"INSERT INTO Brand(Brand_Name) VALUES ('{brandName}')"
-    cur.execute(brand_s)
+    
+    s_brand = '''INSERT INTO Brand(Brand_Name) VALUES('{}');'''.format(brandName)
+    cur.execute(s_brand)
+    s_model = '''INSERT INTO Model(Model_Name) VALUES('{}');'''.format(modelName)
+    cur.execute(s_model)
     mysql.commit()
-
-    model_s = f"INSERT INTO Model(Model_Name, Brand_ID) VALUES ('{modelID}', (SELECT Brand_ID FROM Brand WHERE Brand_Name = '{brandName}'))"
-    cur.execute(model_s)
+    s_product = '''INSERT INTO Product(Product_Name, Serial_Number) VALUES('{}', {});'''.format(productName, serialNumber)
+    cur.execute(s_product, (product_name, serial_number))
     mysql.commit()
+  else:
+    return render_template('add.html')
+    
+  return '{"Result":"Success"}'
+    
+    
 
-    product_s = f"INSERT INTO Product(Product_Name, Serial_Number, Model_ID) VALUES ('{productName}', '{productSerial}', '{modelID}')"
-    cur.execute(product_s)
-    mysql.commit()
 
-    return jsonify({"Result": "Success"})
 
-@app.route("/brands")
-def get_brands():
-    cur = mysql.cursor(dictionary=True)
-    cur.execute("SELECT * FROM Brand")
-    results = cur.fetchall()
-    return jsonify(results)
 
-@app.route("/models/<int:brand_id>")
-def get_models(brand_id):
-    cur = mysql.cursor(dictionary=True)
-    cur.execute(f"SELECT * FROM Model WHERE Brand_ID = {brand_id}")
-    results = cur.fetchall()
-    return jsonify(results)
-
-@app.route("/products/<int:model_id>")
-def get_products(model_id):
-    cur = mysql.cursor(dictionary=True)
-    cur.execute(f"SELECT * FROM Product WHERE Model_ID = {model_id}")
-    results = cur.fetchall()
-    return jsonify(results)
+@app.route("/") #Default - Show Data
+def hello(): # Name of the method
+  cur = mysql.cursor() #create a connection to the SQL instance
+  cur.execute('''SELECT * FROM Brand''') # execute an SQL statment
+  cur.execute('''SELECT * FROM Model''') # execute an SQL statment
+  cur.execute('''SELECT * FROM Product''') # execute an SQL statment
+  rv = cur.fetchall() #Retreive all rows returend by the SQL statment
+  Results=[]
+  for row in rv: #Format the Output Results and add to return string
+    Result={}
+    Result['Brand']=row[0].replace('\n',' ')
+    Result['Model']=row[1]
+    Result['Product']=row[2]
+    Result['Serial Number']=row[3]
+    Results.append(Result)
+  response={'Results':Results, 'count':len(Results)}
+  ret=app.response_class(
+    response=json.dumps(response),
+    status=200,
+    mimetype='application/json'
+  )
+  return ret #Return the data in a string format
 
 
 
