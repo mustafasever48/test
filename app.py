@@ -81,7 +81,6 @@ def hello():
         Result['Serial_Number'] = row[3]
         Result['ProductSoldDate'] = row[4].isoformat() if row[4] else None
         Result['WarrantyCheck'] = row[5]
-        print(f'Day Difference: {DayDifference}, Warranty Check: {WarrantyCheck}')
         Results.append(Result)
         
 
