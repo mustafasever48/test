@@ -54,6 +54,13 @@ def add():
     model_s = '''INSERT INTO Model(Model_Name) VALUES('{}');'''.format(modelName)
     app.logger.info(model_s)
     mysql.commit()
+
+    productName = request.form['Product_Name']
+    print(productName)
+    cur = mysql.cursor()
+    product_s = '''INSERT INTO Model(Product_Name) VALUES('{}');'''.format(productName)
+    app.logger.info(product_s)
+    mysql.commit()
     
   else:
     return render_template('add.html')
@@ -77,6 +84,7 @@ def hello(): # Name of the method
     Result={}
     Result['Brand_Name']=row[1].replace('\n',' ')
     Result['Model_Name']=row[0]
+    Result['Product_Name']=row[2]
 
 
 
