@@ -80,7 +80,9 @@ def hello():
         Result['Product_Name'] = row[2]
         Result['Serial_Number'] = row[3]
         Result['ProductSoldDate'] = row[4].isoformat() if row[4] else None
+        Result['WarrantyCheck'] = row[5]
         Results.append(Result)
+        
 
     response = {'Results': Results, 'count': len(Results)}
     ret = app.response_class(
