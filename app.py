@@ -20,6 +20,7 @@ def add():
         modelName = request.form['Model_Name']
         productName = request.form['Product_Name']
         serialNumber = request.form['Serial_Number']
+        ProductSoldDate = request.form['ProductSoldDate']
 
         cur = mysql.cursor()
 
@@ -34,8 +35,8 @@ def add():
         mysql.commit()
 
         # Product ekleme
-        product_s = 'INSERT INTO Product(Product_Name, Serial_Number) VALUES(%s, %s);'
-        cur.execute(product_s, (productName, serialNumber))
+        product_s = 'INSERT INTO Product(Product_Name, Serial_Number, ProductSoldDate) VALUES(%s, %s, %s);'
+        cur.execute(product_s, (productName, serialNumber,ProductSoldDate))
         mysql.commit()
 
         cur.close()
@@ -54,7 +55,7 @@ def hello():
 
    
     sql_query = '''
-        SELECT Brand.Brand_Name, Model.Model_Name, Product.Product_Name, Product.Serial_Number
+        SELECT Brand.Brand_Name, Model.Model_Name, Product.Product_Name, Product.Serial_Number,Product.ProductSoldDate
         FROM Product
         JOIN Model ON Product.Model_ID = Model.Model_ID
         JOIN Brand ON Model.Brand_ID = Brand.Brand_ID
@@ -71,6 +72,7 @@ def hello():
         Result['Model_Name'] = row[1]
         Result['Product_Name'] = row[2]
         Result['Serial_Number'] = row[3]
+        Result['ProductSoldDate'] = row[4]
         Results.append(Result)
 
     response = {'Results': Results, 'count': len(Results)}
