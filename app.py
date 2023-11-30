@@ -73,7 +73,7 @@ def hello():
         Result['Model_Name'] = row[1]
         Result['Product_Name'] = row[2]
         Result['Serial_Number'] = row[3]
-        Result['ProductSoldDate'] = row[4]
+        Result['ProductSoldDate'] = row[4].isoformat() if row[4] else None
         Results.append(Result)
 
     response = {'Results': Results, 'count': len(Results)}
