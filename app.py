@@ -51,12 +51,10 @@ def add():
     cur.execute(brand_s)
     mysql.commit()
 
-    
-    model_s = f"INSERT INTO Model(Model_Name, Brand_ID) VALUES ('{modelID}')"
+    model_s = f"INSERT INTO Model(Model_Name, Brand_ID) VALUES ('{modelID}', (SELECT Brand_ID FROM Brand WHERE Brand_Name = '{brandName}'))"
     cur.execute(model_s)
     mysql.commit()
 
-    
     product_s = f"INSERT INTO Product(Product_Name, Serial_Number, Model_ID) VALUES ('{productName}', '{productSerial}', '{modelID}')"
     cur.execute(product_s)
     mysql.commit()
