@@ -63,6 +63,8 @@ def hello():
         JOIN Brand ON Model.Brand_ID = Brand.Brand_ID
         WHERE Product.Serial_Number = %s;
     '''
+
+    
  
     cur.execute(sql_query, (serial_number,))
     rv = cur.fetchall()
