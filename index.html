@@ -38,11 +38,26 @@
                 .then(data => {
                     data.Results.forEach(x => {
                         const newRow = document.createElement("tr");
-                        const cells = ["Brand_Name", "Model_Name", "Product_Name", "Serial_Number","ProductSoldDate","WarrantCheck"];
+                        const cells = ["Brand_Name", "Model_Name", "Product_Name", "Serial_Number","ProductSoldDate","WarrantyCheck"];
 
                         cells.forEach(cell => {
                             const newCell = document.createElement("td");
-                            newCell.textContent = x[cell];
+
+                            if (cell === "ProductSoldDate") {
+                                // Get today's date
+                                const today = new Date();
+                                // Get the product sold date
+                                const productSoldDate = new Date(x[cell]);
+
+                                // Calculate warranty duration
+                                const warrantyCheck = (today - productSoldDate) / (1000 * 60 * 60 * 24);
+
+                                // Determine warranty status
+                                newCell.textContent = warrantyCheck <= 730 ? 'Warranty is still valid.' : 'Warranty has expired.';
+                            } else {
+                                newCell.textContent = x[cell];
+                            }
+
                             newRow.appendChild(newCell);
                         });
 
@@ -54,3 +69,6 @@
     </script>
 </body>
 </html>
+
+      
+
