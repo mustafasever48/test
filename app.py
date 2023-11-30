@@ -41,20 +41,13 @@ CORS(app)
 def add():
   if request.method == 'POST':
     brandName = request.form['Brand_Name']
-    modelName = request.form['Mode_Name']
-    productName = request.form['Product_Name']
-    serialNumber = request.form['Serial_Number']
+ 
     print(brandName,modelName,productName,serialNumber)
     cur = mysql.cursor()
     
     s_brand = '''INSERT INTO Brand(Brand_Name) VALUES('{}');'''.format(brandName)
     cur.execute(s_brand)
-    s_model = '''INSERT INTO Model(Model_Name) VALUES('{}');'''.format(modelName)
-    cur.execute(s_model)
-    mysql.commit()
-    s_product = '''INSERT INTO Product(Product_Name, Serial_Number) VALUES('{}', {});'''.format(productName, serialNumber)
-    cur.execute(s_product, (product_name, serial_number))
-    mysql.commit()
+    
   else:
     return render_template('add.html')
     
@@ -70,17 +63,15 @@ def hello(): # Name of the method
   cur = mysql.cursor() #create a connection to the SQL instance
   
   cur.execute('''SELECT * FROM Brand''') # execute an SQL statment
-  cur.execute('''SELECT * FROM Model''') # execute an SQL statment
-  cur.execute('''SELECT * FROM Product''') # execute an SQL statment
+
   
   rv = cur.fetchall() #Retreive all rows returend by the SQL statment
   Results=[]
   for row in rv: #Format the Output Results and add to return string
     Result={}
     Result['Brand']=row[0].replace('\n',' ')
-    Result['Model']=row[1]
-    Result['Product']=row[2]
-    Result['Serial Number']=row[3]
+
+
     Results.append(Result)
   response={'Results':Results, 'count':len(Results)}
   ret=app.response_class(
