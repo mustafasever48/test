@@ -68,7 +68,11 @@ def add():
 @app.route("/") #Default - Show Data
 def hello(): # Name of the method
   cur = mysql.cursor() #create a connection to the SQL instance
-  cur.execute('''SELECT * FROM rma''') # execute an SQL statment
+  
+  cur.execute('''SELECT * FROM Brand''') # execute an SQL statment
+  cur.execute('''SELECT * FROM Model''') # execute an SQL statment
+  cur.execute('''SELECT * FROM Product''') # execute an SQL statment
+  
   rv = cur.fetchall() #Retreive all rows returend by the SQL statment
   Results=[]
   for row in rv: #Format the Output Results and add to return string
