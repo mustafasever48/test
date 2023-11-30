@@ -76,7 +76,7 @@ def hello():
         Result['Product_Name'] = row[2]
         Result['Serial_Number'] = row[3]
         Result['ProductSoldDate'] = row[4].isoformat() if row[4] else None
-        Result['WarrantyCheck'] = row[5]
+        
         Result['WarrantyCheck'] = 'Warranty is still valid.' if warranty_check <= 730 else 'Warranty has expired.'
         Results.append(Result)
         
