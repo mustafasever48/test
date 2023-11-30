@@ -65,8 +65,9 @@ def add():
 def hello(): # Name of the method
   cur = mysql.cursor() #create a connection to the SQL instance
   
-  cur.execute('''SELECT * FROM Brand''') # execute an SQL statment
-  cur.execute('''SELECT * FROM Model''') # execute an SQL statment
+  
+  cur.execute('''SELECT Model.ModelName, Brand.Brand_Name FROM Model
+                 JOIN Brand ON Model.Brand_ID = Brand.Brand_ID''')  # compine two diff table with SQL JOIN 
   
 
   
