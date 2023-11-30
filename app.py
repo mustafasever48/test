@@ -3,6 +3,7 @@ import mysql.connector
 from flask_cors import CORS
 import json
 from datetime import datetime
+from datetime import datetime, timedelta
 
 mysql = mysql.connector.connect(
     user='web',
@@ -56,7 +57,12 @@ def hello():
 
    
     sql_query = '''
-        SELECT Brand.Brand_Name, Model.Model_Name, Product.Product_Name, Product.Serial_Number,Product.ProductSoldDate
+        SELECT Brand.Brand_Name, Model.Model_Name, Product.Product_Name, Product.Serial_Number,Product.ProductSoldDate,
+        TIMESTAMPDIFF(DAY, Product.ProductSoldDate, CURDATE()) AS DayDifference,
+        CASE
+            WHEN TIMESTAMPDIFF(DAY, Product.ProductSoldDate, CURDATE()) <= 730 THEN 'Warranty is still valid.'
+            ELSE 'Warranty has expired.'
+        END AS WarrantyStatus
         FROM Product
         JOIN Model ON Product.Model_ID = Model.Model_ID
         JOIN Brand ON Model.Brand_ID = Brand.Brand_ID
