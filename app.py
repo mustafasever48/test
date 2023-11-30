@@ -52,7 +52,7 @@ def add():
     print(modelName)
     cur = mysql.cursor()
     model_s = '''INSERT INTO Model(Model_Name) VALUES('{}');'''.format(modelName)
-    app.logger.info(brand_s)
+    app.logger.info(model_s)
     mysql.commit()
     
   else:
@@ -67,6 +67,7 @@ def hello(): # Name of the method
   
   cur.execute('''SELECT * FROM Brand''') # execute an SQL statment
   cur.execute('''SELECT * FROM Model''') # execute an SQL statment
+  
 
   
   rv = cur.fetchall() #Retreive all rows returend by the SQL statment
