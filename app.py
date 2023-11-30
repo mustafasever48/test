@@ -41,21 +41,19 @@ CORS(app)
 def add():
   if request.method == 'POST':
     brandName = request.form['Brand_Name']
- 
-    print(brandName,modelName,productName,serialNumber)
+    
+    print(brandName)
     cur = mysql.cursor()
     
-    s_brand = '''INSERT INTO Brand(Brand_Name) VALUES('{}');'''.format(brandName)
-    cur.execute(s_brand)
+    s = '''INSERT INTO Brand(Brand_Name) VALUES('{}');'''.format(brandName)
+    app.logger.info(s)
+    cur.execute(s)
+    mysql.commit()
     
   else:
     return render_template('add.html')
     
   return '{"Result":"Success"}'
-    
-    
-
-
 
 
 @app.route("/") #Default - Show Data
@@ -69,7 +67,8 @@ def hello(): # Name of the method
   Results=[]
   for row in rv: #Format the Output Results and add to return string
     Result={}
-    Result['Brand']=row[0].replace('\n',' ')
+    Result['Brand_Name']=row[0].replace('\n',' ')
+    Result['Brand_ID ']=row[1]
 
 
     Results.append(Result)
