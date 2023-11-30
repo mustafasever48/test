@@ -63,12 +63,6 @@ def add():
     app.logger.info(product_s)
     mysql.commit()
 
-
-
-
- s='''INSERT INTO students(studeFcutntName, email) VALUES('{}','{}');'''.format(name,email)
-   
-    
   else:
     return render_template('add.html')
     
