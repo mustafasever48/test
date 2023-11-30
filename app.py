@@ -58,17 +58,13 @@ def hello():
    
     sql_query = '''
         SELECT Brand.Brand_Name, Model.Model_Name, Product.Product_Name, Product.Serial_Number,Product.ProductSoldDate,
-        TIMESTAMPDIFF(DAY, Product.ProductSoldDate, CURDATE()) AS DayDifference,
-        CASE
-            WHEN TIMESTAMPDIFF(DAY, Product.ProductSoldDate, CURDATE()) <= 730 THEN 'Warranty is still valid.'
-            ELSE 'Warranty has expired.'
-        END AS WarrantyCheck
+        TIMESTAMPDIFF(DAY, Product.ProductSoldDate
         FROM Product
         JOIN Model ON Product.Model_ID = Model.Model_ID
         JOIN Brand ON Model.Brand_ID = Brand.Brand_ID
         WHERE Product.Serial_Number = %s;
     '''
-
+ 
     cur.execute(sql_query, (serial_number,))
     rv = cur.fetchall()
 
@@ -81,6 +77,7 @@ def hello():
         Result['Serial_Number'] = row[3]
         Result['ProductSoldDate'] = row[4].isoformat() if row[4] else None
         Result['WarrantyCheck'] = row[5]
+        Result['WarrantyCheck'] = 'Warranty is still valid.' if warranty_check <= 730 else 'Warranty has expired.'
         Results.append(Result)
         
 

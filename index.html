@@ -38,7 +38,7 @@
                 .then(data => {
                     data.Results.forEach(x => {
                         const newRow = document.createElement("tr");
-                        const cells = ["Brand_Name", "Model_Name", "Product_Name", "Serial_Number","ProductSoldDate","Warrant_Status"];
+                        const cells = ["Brand_Name", "Model_Name", "Product_Name", "Serial_Number","ProductSoldDate","WarrantCheck"];
 
                         cells.forEach(cell => {
                             const newCell = document.createElement("td");
