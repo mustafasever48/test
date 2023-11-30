@@ -76,10 +76,11 @@ def hello(): # Name of the method
   
   
   cur.execute('''
-    SELECT Model.ModelName, Brand.Brand_Name, Product.Product_Name, Product.Serial_Number
+    SELECT Model.Model_Name, Brand.Brand_Name, Product.Product_Name, Product.Serial_Number
     FROM Product
     JOIN Model ON Product.Model_ID = Model.Model_ID
-    JOIN Brand ON Model.Brand_ID = Brand.Brand_ID''')
+    JOIN Brand ON Model.Brand_ID = Brand.Brand_ID
+              ''')
 
   
   rv = cur.fetchall() #Retreive all rows returend by the SQL statment
