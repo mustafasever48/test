@@ -58,7 +58,6 @@ def hello():
    
     sql_query = '''
         SELECT Brand.Brand_Name, Model.Model_Name, Product.Product_Name, Product.Serial_Number,Product.ProductSoldDate,
-        TIMESTAMPDIFF(DAY, Product.ProductSoldDate
         FROM Product
         JOIN Model ON Product.Model_ID = Model.Model_ID
         JOIN Brand ON Model.Brand_ID = Brand.Brand_ID
