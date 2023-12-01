@@ -51,8 +51,6 @@
                                 const productSoldDate = new Date(x["ProductSoldDate"]);
                                 const daysRemaining = Math.floor((productSoldDate - today) / (1000 * 60 * 60 * 24));
                                 newCell.textContent = x[cell];
-
-                                // Check warranty status and update the warrantyStatus paragraph
                                 const warrantyStatus = document.getElementById("warrantyStatus");
                                 warrantyStatus.textContent = `Warranty Status: ${daysRemaining <= 720 ? 'Warranty is still valid.' : 'Warranty has expired.'}`;
                             } else {
@@ -71,5 +69,3 @@
 </body>
 
 </html>
-
-
