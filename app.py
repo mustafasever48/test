@@ -3,6 +3,7 @@ import mysql.connector
 from flask_cors import CORS
 import json
 from datetime import datetime
+from flask import jsonify
 
 mysql = mysql.connector.connect(
     user='web',
@@ -113,12 +114,12 @@ def create_rma():
 
 @app.route("/technical", methods=['GET'])
 def technical():
-    cur = mysql.cursor()
+    cur = mysql.cursor(dictionary=True)
     cur.execute('SELECT * FROM RMA;')
     rma_data = cur.fetchall()
     cur.close()
 
-    return render_template('technical.html', rma_data=rma_data)
+    return jsonify(rma_data)
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port='8080', debug=True, ssl_context=('/etc/letsencrypt/live/msubuntu.northeurope.cloudapp.azure.com/cert.pem', '/etc/letsencrypt/live/msubuntu.northeurope.cloudapp.azure.com/privkey.pem'))
