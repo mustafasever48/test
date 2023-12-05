@@ -22,7 +22,7 @@ def add():
         modelName = request.form['Model_Name']
         productName = request.form['Product_Name']
         serialNumber = request.form['Serial_Number']
-        ProductSoldDate = request.form['ProductSoldDate']
+        ProductSoldDate = request.form['Product_Sold_Date']
 
         cur = mysql.cursor()
 
@@ -37,7 +37,7 @@ def add():
         mysql.commit()
 
         
-        product_s = 'INSERT INTO Product(Product_Name, Serial_Number, ProductSoldDate) VALUES(%s, %s, %s);'
+        product_s = 'INSERT INTO Product(Product_Name, Serial_Number, Product_Sold_Date) VALUES(%s, %s, %s);'
         cur.execute(product_s, (productName, serialNumber,ProductSoldDate))
         mysql.commit()
 
@@ -57,7 +57,7 @@ def hello():
 
    
     sql_query = '''
-        SELECT Brand.Brand_Name, Model.Model_Name, Product.Product_Name, Product.Serial_Number,Product.ProductSoldDate
+        SELECT Brand.Brand_Name, Model.Model_Name, Product.Product_Name, Product.Serial_Number,Product.Product_Sold_Date
         FROM Product
         JOIN Model ON Product.Model_ID = Model.Model_ID
         JOIN Brand ON Model.Brand_ID = Brand.Brand_ID
@@ -74,7 +74,7 @@ def hello():
         Result['Model_Name'] = row[1]
         Result['Product_Name'] = row[2]
         Result['Serial_Number'] = row[3]
-        Result['ProductSoldDate'] = row[4].isoformat() if row[4] else None
+        Result['Product_Sold_Date'] = row[4].isoformat() if row[4] else None
         Results.append(Result)
         
 
