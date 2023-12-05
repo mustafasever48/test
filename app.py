@@ -110,7 +110,7 @@ def create_rma():
     )
 
     return ret
-
+CORS(app, resources={r"/technical/*": {"origins": "https://https://msubuntu.northeurope.cloudapp.azure.com:8080/technical"}})
 @app.route("/technical", methods=['GET'])
 def technical():
     if request.method == 'GET':
