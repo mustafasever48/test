@@ -76,7 +76,40 @@ def hello():
         Result['Serial_Number'] = row[3]
         Result['Product_Sold_Date'] = row[4].isoformat() if row[4] else None
         Results.append(Result)
-        
+    
+    @app.route("/create_rma", methods=['GET'])
+def create_rma():
+    serial_number = request.args.get('serial_number', '')
+    defect_description = request.args.get('defect_description', '')
+    issue_description = request.args.get('issue_description', '')
+
+    cur = mysql.cursor()
+
+ 
+    product_query = 'SELECT Product_ID FROM Product WHERE Serial_Number = %s;'
+    cur.execute(product_query, (serial_number,))
+    product_id = cur.fetchone()[0]
+
+   
+    rma_query = 'INSERT INTO RMA (Product_Defect, Check_Issue, Product_ID) VALUES (%s, %s, %s);'
+    cur.execute(rma_query, (defect_description, issue_description, product_id))
+    mysql.commit()
+
+ 
+    cur.execute('SELECT LAST_INSERT_ID();')
+    rma_id = cur.fetchone()[0]
+
+    cur.close()
+
+    response = {'RMA_ID': rma_id}
+    ret = app.response_class(
+        response=json.dumps(response),
+        status=200,
+        mimetype='application/json'
+    )
+
+    return ret
+
 
     response = {'Results': Results, 'count': len(Results)}
     ret = app.response_class(
