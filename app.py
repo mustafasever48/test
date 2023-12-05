@@ -110,7 +110,7 @@ def create_rma():
     )
 
     return ret
-CORS(app, resources={r"/technical/*": {"origins": "https://msubuntu.northeurope.cloudapp.azure.com:8080/technical"}})
+
 @app.route("/technical", methods=['GET'])
 def technical():
     if request.method == 'GET':
@@ -130,7 +130,7 @@ def technical():
 
 
  
-
+CORS(app, resources={r"/technical/*": {"origins": "https://msubuntu.northeurope.cloudapp.azure.com:8080/technical"}})
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port='8080', debug=True, ssl_context=('/etc/letsencrypt/live/msubuntu.northeurope.cloudapp.azure.com/cert.pem', '/etc/letsencrypt/live/msubuntu.northeurope.cloudapp.azure.com/privkey.pem'))
