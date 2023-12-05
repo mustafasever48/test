@@ -91,8 +91,11 @@ def create_rma():
     cur.execute(product_query, (serial_number,))
     product_id = cur.fetchone()[0]
 
-    rma_query = 'INSERT INTO RMA (Product_Defect, Check_Issue, Product_ID) VALUES (%s, %s, %s);'
-    cur.execute(rma_query, (defect_description, issue_description, product_id))
+   
+    current_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    rma_query = 'INSERT INTO RMA (Inspaction_Start_Date, Check_Issue, Product_ID) VALUES (%s, %s, %s);'
+    cur.execute(rma_query, (current_date, issue_description, product_id))
     mysql.commit()
 
     cur.execute('SELECT LAST_INSERT_ID();')
