@@ -39,8 +39,6 @@
             fetch("https://msubuntu.northeurope.cloudapp.azure.com:8080/technical")
                 .then(response => response.json())
                 .then(data => {
-                    console.log(data); 
-
                     const rmaTableBody = document.getElementById("rmaTableBody");
                     rmaTableBody.innerHTML = "";
 
@@ -49,7 +47,7 @@
 
                         Object.values(row).forEach(value => {
                             const newCell = document.createElement("td");
-                            newCell.textContent = value;
+                            newCell.textContent = value !== null ? value : "";  // Null değerleri kontrol et
                             newRow.appendChild(newCell);
                         });
 
