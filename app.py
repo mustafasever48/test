@@ -116,12 +116,12 @@ def create_rma():
 
 @app.route("/technical", methods=['GET'])
 def technical():
-    cur = mysql.cursor()
+    cur = mysql.cursor(dictionary=True)
     cur.execute('SELECT * FROM RMA;')
     rma_data = cur.fetchall()
     cur.close()
 
-    return render_template('technical.html')
+    return jsonify(rma_data)
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port='8080', debug=True, ssl_context=('/etc/letsencrypt/live/msubuntu.northeurope.cloudapp.azure.com/cert.pem', '/etc/letsencrypt/live/msubuntu.northeurope.cloudapp.azure.com/privkey.pem'))
