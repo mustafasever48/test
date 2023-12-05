@@ -123,7 +123,7 @@ def technical():
     technicians = cur.fetchall()
     cur.close()
 
-    return render_template('/var/www/html/technical.html', technicians=technicians)
+    return render_template('technical.html', technicians=technicians)
 
 
 
