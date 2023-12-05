@@ -110,6 +110,7 @@ def create_rma():
     )
 
     return ret
+
 @app.route("/technical", methods=['GET', 'POST'])
 def technical():
     if request.method == 'POST':
@@ -123,6 +124,8 @@ def technical():
     cur.close()
 
     return render_template('technical.html', technicians=technicians)
+
+ 
 
 
 if __name__ == "__main__":
