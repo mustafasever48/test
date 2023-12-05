@@ -119,7 +119,7 @@ def technical():
         return redirect(url_for('technical'))  
 
     cur = mysql.cursor()
-    cur.execute('SELECT Technician_ID, Technician_Name FROM Technician;')
+    cur.execute('SELECT Technician_ID, Tech_Name FROM Technician;')
     technicians = cur.fetchall()
     cur.close()
 
