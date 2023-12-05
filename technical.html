@@ -44,10 +44,11 @@
 
                     data.forEach(row => {
                         const newRow = document.createElement("tr");
+                        const cells = ["RMA_ID", "Inspaction_Start_Date", "Inspeciton_Completion_Date", "Product_Defect", "Check_Issue", "Result_Issue", "Product_ID", "Technician_ID", "Return_Shipping_ID", "Shipping_Brand_ID"];
 
-                        Object.values(row).forEach(value => {
+                        cells.forEach(cell => {
                             const newCell = document.createElement("td");
-                            newCell.textContent = value !== null ? value : "";  // Null değerleri kontrol et
+                            newCell.textContent = row[cell] !== null ? row[cell] : "";
                             newRow.appendChild(newCell);
                         });
 
