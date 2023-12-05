@@ -50,7 +50,6 @@ def add():
 def hello():
     serial_number = request.args.get('serial_number', '')
 
-    # MongoDB sorgusu
     results = db.Product.aggregate([
         {"$match": {"Serial_Number": serial_number}},
         {"$lookup": {
