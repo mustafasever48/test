@@ -113,12 +113,12 @@ def create_rma():
 
 @app.route("/technical", methods=['GET'])
 def technical():
-    cur = mysql.cursor(dictionary=True)  
+    cur = mysql.cursor()
     cur.execute('SELECT * FROM RMA;')
     rma_data = cur.fetchall()
     cur.close()
 
-    return render_template('technical.html', rma_data=rma_data)
+    return jsonify(rma_data)
 
     return ret
 
