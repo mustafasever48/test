@@ -114,14 +114,39 @@ def create_rma():
 
 
 
-@app.route("/technical", methods=['GET'])
+app.route("/technical", methods=['GET'])
 def technical():
     cur = mysql.cursor()
     cur.execute('SELECT * FROM RMA;')
     rma_data = cur.fetchall()
     cur.close()
 
-    return jsonify(rma_data)
+    Results = []
+    for row in rma_data:
+        Result = {}
+        Result['RMA_ID'] = row[0]
+        Result['Inspaction_Start_Date'] = row[1].isoformat() if row[1] else None
+        Result['Inspeciton_Completion_Date'] = row[2].isoformat() if row[2] else None
+        Result['Product_Defect'] = row[3]
+        Result['Check_Issue'] = row[4]
+        Result['Result_Issue'] = row[5]
+        Result['Product_ID'] = row[6]
+        Result['Technician_ID'] = row[7]
+        Result['Return_Shipping_ID'] = row[8]
+        Result['Shipping_Brand_ID'] = row[9]
+
+        cur.close()
+        response = {'Results': Results, 'count': len(Results)}
+        ret = app.response_class(
+        response=json.dumps(response),
+        status=200,
+        mimetype='application/json'
+    )
+
+    return ret
+
+    response = {'Results': Results, 'count': len(Results)}
+    return ret
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port='8080', debug=True, ssl_context=('/etc/letsencrypt/live/msubuntu.northeurope.cloudapp.azure.com/cert.pem', '/etc/letsencrypt/live/msubuntu.northeurope.cloudapp.azure.com/privkey.pem'))
