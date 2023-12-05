@@ -111,9 +111,9 @@ def create_rma():
 
     return ret
 
-@app.route("/technical", methods=['GET', 'POST'])
+@app.route("/technical", methods=['GET'])
 def technical():
-    if request.method == 'POST':
+    if request.method == 'GET':
         selected_technician_id = request.form['technician_id']
         return redirect(url_for('technical'))
 
