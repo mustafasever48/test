@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 import mysql.connector
 from flask_cors import CORS
 import json
+from datetime import datetime
 
 mysql = mysql.connector.connect(
     user='web',
@@ -33,7 +34,7 @@ def add():
         mysql.commit()
 
         product_s = 'INSERT INTO Product(Product_Name, Serial_Number, Product_Sold_Date) VALUES(%s, %s, %s);'
-        cur.execute(product_s, (productName, serialNumber,ProductSoldDate))
+        cur.execute(product_s, (productName, serialNumber, ProductSoldDate))
         mysql.commit()
 
         cur.close()
@@ -50,7 +51,7 @@ def hello():
     cur = mysql.cursor()
 
     sql_query = '''
-        SELECT Brand.Brand_Name, Model.Model_Name, Product.Product_Name, Product.Serial_Number,Product.Product_Sold_Date
+        SELECT Brand.Brand_Name, Model.Model_Name, Product.Product_Name, Product.Serial_Number, Product.Product_Sold_Date
         FROM Product
         JOIN Model ON Product.Model_ID = Model.Model_ID
         JOIN Brand ON Model.Brand_ID = Brand.Brand_ID
@@ -82,7 +83,6 @@ def hello():
 @app.route("/create_rma", methods=['GET'])
 def create_rma():
     serial_number = request.args.get('serial_number', '')
-    
     issue_description = request.args.get('issue_description', '')
 
     cur = mysql.cursor()
@@ -91,7 +91,6 @@ def create_rma():
     cur.execute(product_query, (serial_number,))
     product_id = cur.fetchone()[0]
 
-   
     current_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
     rma_query = 'INSERT INTO RMA (Inspaction_Start_Date, Check_Issue, Product_ID) VALUES (%s, %s, %s);'

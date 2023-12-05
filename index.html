@@ -160,7 +160,7 @@
 
         function createRma() {
             const serialNumber = document.getElementById("serialNumber").value;
-            const defectDescription = document.getElementById("defectDescription").value;
+            
             const issueDescription = document.getElementById("issueDescription").value;
 
             fetch(`https://msubuntu.northeurope.cloudapp.azure.com:8080/create_rma?serial_number=${serialNumber}&defect_description=${defectDescription}&issue_description=${issueDescription}`)
