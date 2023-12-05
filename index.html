@@ -48,8 +48,8 @@
                         cells.forEach(cell => {
                             const newCell = document.createElement("td");
 
-                            if (cell === "ProductSoldDate") {
-                                const productSoldDate = new Date(x["ProductSoldDate"]);
+                            if (cell === "Product_Sold_Date") {
+                                const productSoldDate = new Date(x["Product_Sold_Date"]);
                                 const daysRemaining = Math.floor((productSoldDate - today) / (1000 * 60 * 60 * 24));
                                 newCell.textContent = x[cell];
                                 const warrantyStatus = document.getElementById("warrantyStatus");
@@ -70,3 +70,5 @@
 </body>
 
 </html>
+
+
