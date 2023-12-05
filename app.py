@@ -114,7 +114,8 @@ def create_rma():
 @app.route("/technical", methods=['GET'])
 def technical():
     if request.method == 'GET':
-        selected_technician_id = request.form['technician_id']
+        selected_technician_id = request.args.get('technician_id')
+       
         return redirect(url_for('technical'))
 
     cur = mysql.cursor()
@@ -122,7 +123,7 @@ def technical():
     technicians = cur.fetchall()
     cur.close()
 
-    return render_template('technical.html')
+    return render_template('technical.html', technicians=technicians)
 
 
 
