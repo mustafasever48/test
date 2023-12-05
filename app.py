@@ -115,7 +115,8 @@ def create_rma():
 def technical():
     if request.method == 'POST':
         selected_technician_id = request.form['technician_id']
-        return redirect(url_for('technical'))
+        return redirect('/technical')
+
 
     cur = mysql.cursor()
     cur.execute('SELECT Technician_ID, Tech_Name FROM Technician;')
