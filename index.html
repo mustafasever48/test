@@ -97,3 +97,84 @@
 </html>
 
 
+
+
+
+<!-- technical.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Technical Personnel Page</title>
+</head>
+
+<body>
+    <h1>RMA Cases for Technical Personnel</h1>
+
+    <h2>Assign Technical Personnal</h2>
+    <form method="post" action="/technical">
+        <label for="technician_id">technical personnel:</label>
+        <select id="technician_id" name="technician_id">
+            {% for technician in technicians %}
+            <option value="{{ technician[0] }}">{{ technician[1] }}</option>
+            {% endfor %}
+        </select>
+
+        <br><br>
+
+        <button type="submit">Assign</button>
+    </form>
+
+
+    <br><br>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>RMA ID</th>
+                <th>Inspaction Start Date</th>
+                <th>Inspeciton Completion Date</th>
+                <th>Product Defect</th>
+                <th>Check Issue</th>
+                <th>Result Issue</th>
+                <th>Product ID</th>
+                <th>Technician ID</th>
+                <th>Return Shipping ID</th>
+                <th>Shipping Brand ID</th>
+            </tr>
+        </thead>
+        <tbody id="rmaTableBody"></tbody>
+    </table>
+
+    <script>
+        function fetchData() {
+            fetch("https://msubuntu.northeurope.cloudapp.azure.com:8080/technical")
+                .then(response => response.json())
+                .then(data => {
+                    const rmaTableBody = document.getElementById("rmaTableBody");
+                    rmaTableBody.innerHTML = "";
+
+                    data.results.forEach(row => {
+                        const newRow = document.createElement("tr");
+
+                        Object.values(row).forEach(value => {
+                            const newCell = document.createElement("td");
+                            newCell.textContent = value;
+                            newRow.appendChild(newCell);
+                        });
+
+                        rmaTableBody.appendChild(newRow);
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        // Fetch data on page load
+        fetchData();
+    </script>
+</body>
+
+</html>
