@@ -6,6 +6,7 @@ from datetime import datetime
 
 app = Flask(__name__)
 CORS(app)
+CORS(app, resources={r"/*": {"origins": "https://msubuntu.northeurope.cloudapp.azure.com"}})
 
 mysql = mysql.connector.connect(
     user='web',
