@@ -128,6 +128,7 @@ def technical():
         response=json.dumps(response),
         status=200,
         mimetype='application/json'
+    
     )
 
     return ret
