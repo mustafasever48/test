@@ -125,6 +125,7 @@ def technical():
 
     return render_template('technical.html', technicians=technicians)
 
+
  
 
 

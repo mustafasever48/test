@@ -73,105 +73,82 @@
 
 
 
+
+<!-- technical.html -->
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test API Client</title>
+    <title>Technical Personnel Page</title>
 </head>
 
 <body>
-    <label for="serialNumber">Enter Serial Number:</label>
-    <input type="text" id="serialNumber" name="serialNumber">
-    <button onclick="fetchData()">Get Data</button>
+    <h1>RMA Cases for Technical Personnel</h1>
+
+    <h2>Assign Technical Personnal</h2>
+    <form method="post" action="/technical personnel">
+        <label for="technician_id">technical personnel:</label>
+        <select id="technician_id" name="technician_id">
+            {% for technician in technicians %}
+            <option value="{{ technician[0] }}">{{ technician[1] }}</option>
+            {% endfor %}
+        </select>
+
+        <br><br>
+
+        <button type="submit">Assign</button>
+    </form>
+
 
     <br><br>
 
-    <table id="tab1" bgcolor="blue">
+    <table border="1">
         <thead>
             <tr>
-                <th>Brand</th>
-                <th>Model</th>
-                <th>Product</th>
-                <th>Serial Number</th>
-                <th>Product Sold Date</th>
+                <th>RMA ID</th>
+                <th>Inspaction Start Date</th>
+                <th>Inspeciton Completion Date</th>
+                <th>Product Defect</th>
+                <th>Check Issue</th>
+                <th>Result Issue</th>
+                <th>Product ID</th>
+                <th>Technician ID</th>
+                <th>Return Shipping ID</th>
+                <th>Shipping Brand ID</th>
             </tr>
         </thead>
-        <tbody id="tableBody"></tbody>
+        <tbody id="rmaTableBody"></tbody>
     </table>
-
-    <p id="warrantyStatus"></p>
-
-    <br><br>
-
-    <h2>Create RMA Case</h2>
-    <form id="rmaForm">
-        <label for="defectDescription">Product Defect:</label>
-        <input type="text" id="defectDescription" name="defectDescription">
-
-        <br><br>
-
-        <label for="issueDescription">Check Issue:</label>
-        <input type="text" id="issueDescription" name="issueDescription">
-
-        <br><br>
-
-        <button type="button" onclick="createRma()">Create RMA Case</button>
-    </form>
 
     <script>
         function fetchData() {
-            const serialNumber = document.getElementById("serialNumber").value;
-
-            fetch(`https://msubuntu.northeurope.cloudapp.azure.com:8080/?serial_number=${serialNumber}`)
+            fetch("https://msubuntu.northeurope.cloudapp.azure.com:8080/technical")
                 .then(response => response.json())
                 .then(data => {
-                    const tableBody = document.getElementById("tableBody");
-                    const warrantyStatus = document.getElementById("warrantyStatus");
+                    const rmaTableBody = document.getElementById("rmaTableBody");
+                    rmaTableBody.innerHTML = "";
 
-                    tableBody.innerHTML = ""; // Tabloyu temizle
-
-                    data.Results.forEach(x => {
+                    data.results.forEach(row => {
                         const newRow = document.createElement("tr");
-                        const cells = ["Brand_Name", "Model_Name", "Product_Name", "Serial_Number", "Product_Sold_Date"];
 
-                        cells.forEach(cell => {
+                        Object.values(row).forEach(value => {
                             const newCell = document.createElement("td");
-
-                            if (cell === "Product_Sold_Date") {
-                                const productSoldDate = new Date(x[cell]);
-                                const daysRemaining = Math.floor((productSoldDate - new Date()) / (1000 * 60 * 60 * 24));
-                                newCell.textContent = x[cell];
-                                warrantyStatus.textContent = `Warranty Status: ${daysRemaining <= 720 ? 'Warranty is still valid.' : 'Warranty has expired.'}`;
-                            } else {
-                                newCell.textContent = x[cell];
-                            }
-
+                            newCell.textContent = value;
                             newRow.appendChild(newCell);
                         });
 
-                        tableBody.appendChild(newRow);
+                        rmaTableBody.appendChild(newRow);
                     });
                 })
                 .catch(error => console.error('Error:', error));
         }
 
-        function createRma() {
-            const serialNumber = document.getElementById("serialNumber").value;
-            
-            const issueDescription = document.getElementById("issueDescription").value;
-
-            fetch(`https://msubuntu.northeurope.cloudapp.azure.com:8080/create_rma?serial_number=${serialNumber}&defect_description=${defectDescription}&issue_description=${issueDescription}`)
-                .then(response => response.json())
-                .then(data => {
-                    alert(`RMA Case ID: ${data.RMA_ID}`);
-                })
-                .catch(error => console.error('Error:', error));
-        }
+        // Fetch data on page load
+        fetchData();
     </script>
 </body>
 
 </html>
-
