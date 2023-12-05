@@ -11,7 +11,6 @@
     <h1>RMA Cases for Technical Personnel</h1>
 
     <h2>Assign Technical Personnel</h2>
-    
 
     <br><br>
 
@@ -31,7 +30,7 @@
             </tr>
         </thead>
         <tbody id="rmaTableBody">
-            
+
         </tbody>
     </table>
 
@@ -40,10 +39,12 @@
             fetch("https://msubuntu.northeurope.cloudapp.azure.com:8080/technical")
                 .then(response => response.json())
                 .then(data => {
+                    console.log(data); 
+
                     const rmaTableBody = document.getElementById("rmaTableBody");
                     rmaTableBody.innerHTML = "";
 
-                    data.rma_data.forEach(row => {
+                    data.forEach(row => {
                         const newRow = document.createElement("tr");
 
                         Object.values(row).forEach(value => {
@@ -58,7 +59,6 @@
                 .catch(error => console.error('Error:', error));
         }
 
-        
         fetchData();
     </script>
 </body>
