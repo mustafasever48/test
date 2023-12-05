@@ -111,18 +111,18 @@ def create_rma():
 
     return ret
 
-@app.route("/var/www/html/technical.html", methods=['GET', 'POST'])
+@app.route("/technical", methods=['GET', 'POST'])
 def technical():
     if request.method == 'POST':
         selected_technician_id = request.form['technician_id']
-        return redirect(url_for('/var/www/html/technical.html'))
+        return redirect(url_for('technical'))
 
     cur = mysql.cursor()
     cur.execute('SELECT Technician_ID, Tech_Name FROM Technician;')
     technicians = cur.fetchall()
     cur.close()
 
-    return render_template('/var/www/html/technical.html', technicians=technicians)
+    return render_template('technical.html', technicians=technicians)
 
 
 
