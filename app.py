@@ -113,23 +113,12 @@ def create_rma():
 
 @app.route("/technical", methods=['GET'])
 def technical():
-    if request.method == 'GET':
-        selected_technician_id = request.args.get('technician_id')
-       
-        return redirect(url_for('technical'))
-
-    cur = mysql.cursor()
-    cur.execute('SELECT Technician_ID, Tech_Name FROM Technician;')
-    technicians = cur.fetchall()
+    cur = mysql.cursor(dictionary=True)  
+    cur.execute('SELECT * FROM RMA;')
+    rma_data = cur.fetchall()
     cur.close()
 
-    response = {'technicians': technicians}
-    ret = app.response_class(
-        response=json.dumps(response),
-        status=200,
-        mimetype='application/json'
-    
-    )
+    return render_template('technical.html', rma_data=rma_data)
 
     return ret
 
