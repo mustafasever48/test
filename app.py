@@ -2,8 +2,6 @@ from flask import Flask, render_template, request
 import mysql.connector
 from flask_cors import CORS
 import json
-from datetime import datetime
-from datetime import datetime, timedelta
 
 mysql = mysql.connector.connect(
     user='web',
@@ -26,17 +24,14 @@ def add():
 
         cur = mysql.cursor()
 
-        
         brand_s = 'INSERT INTO Brand(Brand_Name) VALUES(%s);'
         cur.execute(brand_s, (brandName,))
         mysql.commit()
 
-        
         model_s = 'INSERT INTO Model(Model_Name) VALUES(%s);'
         cur.execute(model_s, (modelName,))
         mysql.commit()
 
-        
         product_s = 'INSERT INTO Product(Product_Name, Serial_Number, Product_Sold_Date) VALUES(%s, %s, %s);'
         cur.execute(product_s, (productName, serialNumber,ProductSoldDate))
         mysql.commit()
@@ -48,14 +43,12 @@ def add():
 
     return '{"Result":"Success"}'
 
-
 @app.route("/", methods=['GET'])
 def hello():
     serial_number = request.args.get('serial_number', '')
 
     cur = mysql.cursor()
 
-   
     sql_query = '''
         SELECT Brand.Brand_Name, Model.Model_Name, Product.Product_Name, Product.Serial_Number,Product.Product_Sold_Date
         FROM Product
@@ -76,8 +69,17 @@ def hello():
         Result['Serial_Number'] = row[3]
         Result['Product_Sold_Date'] = row[4].isoformat() if row[4] else None
         Results.append(Result)
-    
-    @app.route("/create_rma", methods=['GET'])
+
+    response = {'Results': Results, 'count': len(Results)}
+    ret = app.response_class(
+        response=json.dumps(response),
+        status=200,
+        mimetype='application/json'
+    )
+
+    return ret
+
+@app.route("/create_rma", methods=['GET'])
 def create_rma():
     serial_number = request.args.get('serial_number', '')
     defect_description = request.args.get('defect_description', '')
@@ -85,17 +87,14 @@ def create_rma():
 
     cur = mysql.cursor()
 
- 
     product_query = 'SELECT Product_ID FROM Product WHERE Serial_Number = %s;'
     cur.execute(product_query, (serial_number,))
     product_id = cur.fetchone()[0]
 
-   
     rma_query = 'INSERT INTO RMA (Product_Defect, Check_Issue, Product_ID) VALUES (%s, %s, %s);'
     cur.execute(rma_query, (defect_description, issue_description, product_id))
     mysql.commit()
 
- 
     cur.execute('SELECT LAST_INSERT_ID();')
     rma_id = cur.fetchone()[0]
 
@@ -109,17 +108,6 @@ def create_rma():
     )
 
     return ret
-
-
-    response = {'Results': Results, 'count': len(Results)}
-    ret = app.response_class(
-        response=json.dumps(response),
-        status=200,
-        mimetype='application/json'
-    )
-
-    return ret
-
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port='8080', debug=True, ssl_context=('/etc/letsencrypt/live/msubuntu.northeurope.cloudapp.azure.com/cert.pem', '/etc/letsencrypt/live/msubuntu.northeurope.cloudapp.azure.com/privkey.pem'))
