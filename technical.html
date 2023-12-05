@@ -10,20 +10,8 @@
 <body>
     <h1>RMA Cases for Technical Personnel</h1>
 
-    <h2>Assign Technical Personnal</h2>
-    <form method="post" action="/technical">
-        <label for="technician_id">technical personnel:</label>
-        <select id="technician_id" name="technician_id">
-            {% for technician in technicians %}
-            <option value="{{ technician[0] }}">{{ technician[1] }}</option>
-            {% endfor %}
-        </select>
-
-        <br><br>
-
-        <button type="submit">Assign</button>
-    </form>
-
+    <h2>Assign Technical Personnel</h2>
+    
 
     <br><br>
 
@@ -42,7 +30,9 @@
                 <th>Shipping Brand ID</th>
             </tr>
         </thead>
-        <tbody id="rmaTableBody"></tbody>
+        <tbody id="rmaTableBody">
+            
+        </tbody>
     </table>
 
     <script>
@@ -53,7 +43,7 @@
                     const rmaTableBody = document.getElementById("rmaTableBody");
                     rmaTableBody.innerHTML = "";
 
-                    data.results.forEach(row => {
+                    data.rma_data.forEach(row => {
                         const newRow = document.createElement("tr");
 
                         Object.values(row).forEach(value => {
@@ -68,11 +58,9 @@
                 .catch(error => console.error('Error:', error));
         }
 
-        // Fetch data on page load
+        
         fetchData();
     </script>
 </body>
 
 </html>
-
-
