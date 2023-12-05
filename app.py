@@ -118,9 +118,7 @@ def technical():
     rma_data = cur.fetchall()
     cur.close()
 
-    return jsonify(rma_data)
-
-    return ret
+    return render_template('technical.html', rma_data=rma_data)
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port='8080', debug=True, ssl_context=('/etc/letsencrypt/live/msubuntu.northeurope.cloudapp.azure.com/cert.pem', '/etc/letsencrypt/live/msubuntu.northeurope.cloudapp.azure.com/privkey.pem'))
