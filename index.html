@@ -72,3 +72,106 @@
 </html>
 
 
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test API Client</title>
+</head>
+
+<body>
+    <label for="serialNumber">Enter Serial Number:</label>
+    <input type="text" id="serialNumber" name="serialNumber">
+    <button onclick="fetchData()">Get Data</button>
+
+    <br><br>
+
+    <table id="tab1" bgcolor="blue">
+        <thead>
+            <tr>
+                <th>Brand</th>
+                <th>Model</th>
+                <th>Product</th>
+                <th>Serial Number</th>
+                <th>Product Sold Date</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+    </table>
+
+    <p id="warrantyStatus"></p>
+
+    <br><br>
+
+    <h2>Create RMA Case</h2>
+    <form id="rmaForm">
+        <label for="defectDescription">Product Defect:</label>
+        <input type="text" id="defectDescription" name="defectDescription">
+
+        <br><br>
+
+        <label for="issueDescription">Check Issue:</label>
+        <input type="text" id="issueDescription" name="issueDescription">
+
+        <br><br>
+
+        <button type="button" onclick="createRma()">Create RMA Case</button>
+    </form>
+
+    <script>
+        function fetchData() {
+            const serialNumber = document.getElementById("serialNumber").value;
+
+            fetch(`https://msubuntu.northeurope.cloudapp.azure.com:8080/?serial_number=${serialNumber}`)
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.getElementById("tableBody");
+                    const warrantyStatus = document.getElementById("warrantyStatus");
+
+                    tableBody.innerHTML = ""; // Tabloyu temizle
+
+                    data.Results.forEach(x => {
+                        const newRow = document.createElement("tr");
+                        const cells = ["Brand_Name", "Model_Name", "Product_Name", "Serial_Number", "Product_Sold_Date"];
+
+                        cells.forEach(cell => {
+                            const newCell = document.createElement("td");
+
+                            if (cell === "Product_Sold_Date") {
+                                const productSoldDate = new Date(x[cell]);
+                                const daysRemaining = Math.floor((productSoldDate - new Date()) / (1000 * 60 * 60 * 24));
+                                newCell.textContent = x[cell];
+                                warrantyStatus.textContent = `Warranty Status: ${daysRemaining <= 720 ? 'Warranty is still valid.' : 'Warranty has expired.'}`;
+                            } else {
+                                newCell.textContent = x[cell];
+                            }
+
+                            newRow.appendChild(newCell);
+                        });
+
+                        tableBody.appendChild(newRow);
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function createRma() {
+            const serialNumber = document.getElementById("serialNumber").value;
+            const defectDescription = document.getElementById("defectDescription").value;
+            const issueDescription = document.getElementById("issueDescription").value;
+
+            fetch(`https://msubuntu.northeurope.cloudapp.azure.com:8080/create_rma?serial_number=${serialNumber}&defect_description=${defectDescription}&issue_description=${issueDescription}`)
+                .then(response => response.json())
+                .then(data => {
+                    alert(`RMA Case ID: ${data.RMA_ID}`);
+                })
+                .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+
+</html>
+

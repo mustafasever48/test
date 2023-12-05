@@ -82,7 +82,7 @@ def hello():
 @app.route("/create_rma", methods=['GET'])
 def create_rma():
     serial_number = request.args.get('serial_number', '')
-    defect_description = request.args.get('defect_description', '')
+    
     issue_description = request.args.get('issue_description', '')
 
     cur = mysql.cursor()
