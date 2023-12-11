@@ -112,6 +112,38 @@ def create_rma():
 
     return ret
 
+@app.route("/check_rma_status", methods=['GET'])
+def check_rma_status():
+    rma_id = request.args.get('rma_id', '')
+    serial_number = request.args.get('serial_number', '')
+
+    cur = mysql.cursor()
+
+    rma_status_query = '''
+        SELECT RMA.Result_Issue, RMA.Inspeciton_Completion_Date
+        FROM RMA
+        JOIN Product ON RMA.Product_ID = Product.Product_ID
+        WHERE RMA.RMA_ID = %s AND Product.Serial_Number = %s;
+    '''
+
+    cur.execute(rma_status_query, (rma_id, serial_number))
+    rv = cur.fetchone()
+
+    if rv:
+        result_issue, completion_date = rv
+        response = {'Result_Issue': result_issue, 'Completion_Date': completion_date.isoformat() if completion_date else None}
+    else:
+        response = {'Result_Issue': None, 'Completion_Date': None}
+
+    cur.close()
+
+    ret = app.response_class(
+        response=json.dumps(response),
+        status=200,
+        mimetype='application/json'
+    )
+
+    return ret
 
 
 @app.route("/technical", methods=['GET'])
