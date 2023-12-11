@@ -145,6 +145,7 @@ def check_rma_status():
 @app.route('/technical')
 def technical_page():
     return render_template('technical.html')
+return render_template('/var/www/html/technical.html')
 
 
 
