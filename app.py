@@ -145,7 +145,7 @@ def check_rma_status():
 
 
 
-@app.route('/', methods=['GET'])
+@app.route('/technical', methods=['GET'])
 def technical_page():
     cur = mysql.cursor(dictionary=True)
 
@@ -162,7 +162,7 @@ def technical_page():
     cur.close()
     logging.info(rma_status)
 
-    return render_template('technical')
+    return render_template('technical.html')
 
 
 
