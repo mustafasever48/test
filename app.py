@@ -164,11 +164,9 @@ def check_rma_status():
 
 
 
-
-
 @app.route('/technical', methods=['GET'])
 def technical_page():
-    
+   
     rma_status = [
         {
             'RMA_ID': 1,
@@ -181,11 +179,10 @@ def technical_page():
             'Serial_Number': 'ABC123',
             'Product_Name': 'Product 1'
         },
-    
+        
     ]
 
-    return render_template('technical.html', rma_status=rma_status)
-
+    return jsonify(rma_status)
 
 
 
