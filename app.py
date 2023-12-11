@@ -144,7 +144,7 @@ def check_rma_status():
 
 from flask import render_template
 
-@app.route('/technical')
+@app.route('/technical', methods=['GET'])
 def technical_page():
     cur = mysql.cursor(dictionary=True)
 
