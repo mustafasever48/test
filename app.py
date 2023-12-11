@@ -160,9 +160,9 @@ def technical_page():
     rma_status = cur.fetchall()
 
     cur.close()
-    print(rma_status) 
+    logging.info(rma_status)
 
-    return render_template('/var/www/html/technical/index.html', rma_status=rma_status)
+    return render_template('/var/www/html/technical', rma_status=rma_status)
 
 
 
