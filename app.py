@@ -11,6 +11,10 @@ mysql = mysql.connector.connect(
     host='127.0.0.1',
     database='rma'
 )
+import os
+print(os.getcwd())
+
+
 from logging.config import dictConfig
 dictConfig({
     'version': 1,
