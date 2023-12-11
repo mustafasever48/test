@@ -86,11 +86,19 @@ def create_rma():
     serial_number = request.args.get('serial_number', '')
     issue_description = request.args.get('issue_description', '')
 
+    if not serial_number:
+        return '{"error": "Serial_Number cannot be empty."}', 400
+
     cur = mysql.cursor()
 
     product_query = 'SELECT Product_ID FROM Product WHERE Serial_Number = %s;'
     cur.execute(product_query, (serial_number,))
-    product_id = cur.fetchone()[0]
+    product_data = cur.fetchone()
+
+    if not product_data:
+        return '{"error": "Product not found for the given Serial_Number."}', 404
+
+    product_id = product_data[0]
 
     current_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
