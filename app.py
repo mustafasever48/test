@@ -142,10 +142,26 @@ def check_rma_status():
     return jsonify(rma_status)
 
 
+from flask import render_template
+
 @app.route('/technical')
 def technical_page():
-    
-    return render_template('/var/www/html/technical/')
+    cur = mysql.cursor(dictionary=True)
+
+    rma_status_query = '''
+        SELECT RMA.RMA_ID, RMA.Inspaction_Start_Date, RMA.Inspeciton_Completion_Date, RMA.Product_Defect,
+               RMA.Check_Issue, RMA.Result_Issue, RMA.Product_ID, Product.Serial_Number, Product.Product_Name
+        FROM RMA
+        LEFT JOIN Product ON RMA.Product_ID = Product.Product_ID;
+    '''
+
+    cur.execute(rma_status_query)
+    rma_status = cur.fetchall()
+
+    cur.close()
+
+    return render_template('/var/www/html/technical/', rma_status=rma_status)
+
 
 
 
