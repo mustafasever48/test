@@ -41,6 +41,38 @@
         <button type="button" onclick="createRma()">Create RMA Case</button>
     </form>
 
+    <h2>Check RMA Status</h2>
+    <form id="checkRmaForm">
+        <label for="serialNumberCheck">Enter Serial Number:</label>
+        <input type="text" id="serialNumberCheck" name="serialNumberCheck">
+        <button type="button" onclick="checkRmaStatus()">Check RMA Status</button>
+    </form>
+    <h2>Check RMA Status</h2>
+    <form id="checkRmaForm">
+        <label for="serialNumberCheck">Enter Serial Number:</label>
+        <input type="text" id="serialNumberCheck" name="serialNumberCheck">
+        <button type="button" onclick="checkRmaStatus()">Check RMA Status</button>
+    </form>
+
+    <table id="rmaTable" bgcolor="green">
+        <thead>
+            <tr>
+                <th>RMA ID</th>
+                <th>Inspaction Start Date</th>
+                <th>Inspection Completion Date</th>
+                <th>Product Defect</th>
+                <th>Check Issue</th>
+                <th>Result Issue</th>
+                <th>Product ID</th>
+                <th>Serial Number</th>
+                <th>Product Name</th>
+            </tr>
+        </thead>
+        <tbody id="rmaTableBody"></tbody>
+    </table>
+
+    <p id="rmaStatus"></p>
+
     <script>
         function fetchData() {
             const serialNumber = document.getElementById("serialNumber").value;
@@ -51,7 +83,7 @@
                     const tableBody = document.getElementById("tableBody");
                     const warrantyStatus = document.getElementById("warrantyStatus");
 
-                    tableBody.innerHTML = ""
+                    tableBody.innerHTML = "";
 
                     data.Results.forEach(x => {
                         const newRow = document.createElement("tr");
@@ -62,17 +94,15 @@
 
                             if (cell === "Product_Sold_Date") {
                                 const productSoldDate = new Date(x[cell]);
-                                if (cell === "Product_Sold_Date") {
-                                    const productSoldDate = new Date(x[cell]);
-                                    const daysRemaining = Math.floor((productSoldDate - new Date()) / (1000 * 60 * 60 * 24));
-                                    newCell.textContent = x[cell];
-                                    warrantyStatus.textContent = `Warranty Status: ${daysRemaining <= 720 ? 'Warranty is still valid.' : 'Warranty has expired.'}`;
-                                } else {
-                                    newCell.textContent = x[cell];
-                                }
+                                const daysRemaining = Math.floor((productSoldDate - new Date()) / (1000 * 60 * 60 * 24));
+                                newCell.textContent = x[cell];
+                                warrantyStatus.textContent = `Warranty Status: ${daysRemaining <= 720 ? 'Warranty is still valid.' : 'Warranty has expired.'}`;
+                            } else {
+                                newCell.textContent = x[cell];
+                            }
 
-                                newRow.appendChild(newCell);
-                            });
+                            newRow.appendChild(newCell);
+                        });
 
                         tableBody.appendChild(newRow);
                     });
@@ -88,6 +118,44 @@
                 .then(response => response.json())
                 .then(data => {
                     alert(`RMA Case ID: ${data.RMA_ID}`);
+                })
+                .catch(error => console.error('Error:', error));
+        }
+        function checkRmaStatus() {
+            const serialNumberCheck = document.getElementById("serialNumberCheck").value;
+
+            fetch(`https://msubuntu.northeurope.cloudapp.azure.com:8080/check_rma_status?serial_number=${serialNumberCheck}`)
+                .then(response => response.json())
+                .then(data => {
+                    const rmaTableBody = document.getElementById("rmaTableBody");
+                    const rmaStatus = document.getElementById("rmaStatus");
+
+                    rmaStatus.textContent = "";
+                    rmaTableBody.innerHTML = "";
+
+                    if (data.length > 0) {
+                        data.forEach(rma => {
+                            const newRow = document.createElement("tr");
+                            const cells = ["RMA_ID", "Inspaction_Start_Date", "Inspeciton_Completion_Date", "Product_Defect", "Check_Issue", "Result_Issue", "Product_ID", "Serial_Number", "Product_Name"];
+
+                            cells.forEach(cell => {
+                                const newCell = document.createElement("td");
+
+                                if (cell.includes("Date")) {
+                                    const date = new Date(rma[cell]);
+                                    newCell.textContent = date.toISOString().split('T')[0];
+                                } else {
+                                    newCell.textContent = rma[cell];
+                                }
+
+                                newRow.appendChild(newCell);
+                            });
+
+                            rmaTableBody.appendChild(newRow);
+                        });
+                    } else {
+                        rmaStatus.textContent = 'RMA not found.';
+                    }
                 })
                 .catch(error => console.error('Error:', error));
         }
