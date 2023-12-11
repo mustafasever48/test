@@ -137,13 +137,7 @@ def check_rma_status():
 
     cur.close()
 
-    ret = app.response_class(
-        response=json.dumps(response),
-        status=200,
-        mimetype='application/json'
-    )
-
-    return ret
+    return json.dumps(response)
 
 
 @app.route("/technical", methods=['GET'])
