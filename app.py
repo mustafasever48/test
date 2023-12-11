@@ -120,7 +120,7 @@ def check_rma_status():
     cur = mysql.cursor()
 
     rma_status_query = '''
-        SELECT RMA.Result_Issue, RMA.Inspeciton_Completion_Date, Product.Serial_Number
+        SELECT RMA.Result_Issue, RMA.Inspeciton_Completion_Date
         FROM RMA
         JOIN Product ON RMA.Product_ID = Product.Product_ID
         WHERE RMA.RMA_ID = %s AND Product.Serial_Number = %s;
