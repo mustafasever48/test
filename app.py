@@ -181,7 +181,7 @@ def technical_page():
     cur.close()
     logging.info(rma_status)
 
-    return render_template('technical.html')
+    return render_template('technical')
 
 
 
