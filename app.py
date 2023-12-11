@@ -193,6 +193,26 @@ def get_technicians():
     return jsonify(technicians)
 
 
+@app.route('/assign_technician', methods=['POST'])
+def assign_technician():
+    rma_id = request.form.get('rma_id')
+    technician_id = request.form.get('technician_id')
+
+    if not rma_id or not technician_id:
+        return '{"error": "RMA_ID and Technician_ID are required."}', 400
+
+    cur = mysql.cursor()
+    
+    
+    update_query = 'UPDATE RMA SET Technician_ID = %s WHERE RMA_ID = %s;'
+    cur.execute(update_query, (technician_id, rma_id))
+    mysql.commit()
+
+    cur.close()
+
+    return '{"Result": "Success"}'
+
+
 
 
 
