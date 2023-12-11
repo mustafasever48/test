@@ -125,27 +125,22 @@ def check_rma_status():
     rma_id = request.args.get('rma_id', '')
     serial_number = request.args.get('serial_number', '')
 
-    cur = mysql.cursor()
+    cur = mysql.cursor(dictionary=True)
 
     rma_status_query = '''
-        SELECT RMA.Result_Issue, RMA.Inspeciton_Completion_Date
+        SELECT RMA.RMA_ID, RMA.Inspaction_Start_Date, RMA.Inspeciton_Completion_Date, RMA.Product_Defect,
+               RMA.Check_Issue, RMA.Result_Issue, RMA.Product_ID, Product.Serial_Number, Product.Product_Name
         FROM RMA
-        JOIN Product ON RMA.Product_ID = Product.Product_ID
-        WHERE RMA.RMA_ID = %s AND Product.Serial_Number = %s;
+        LEFT JOIN Product ON RMA.Product_ID = Product.Product_ID
+        WHERE RMA.RMA_ID = %s OR Product.Serial_Number = %s;
     '''
 
     cur.execute(rma_status_query, (rma_id, serial_number))
-    rv = cur.fetchone()
-
-    if rv:
-        result_issue, completion_date = rv
-        response = {'Result_Issue': result_issue, 'Completion_Date': completion_date.isoformat() if completion_date else None}
-    else:
-        response = {'Result_Issue': None, 'Completion_Date': None}
+    rma_status = cur.fetchall()
 
     cur.close()
 
-    return json.dumps(response)
+    return jsonify(rma_status)
 
 
 @app.route("/technical", methods=['GET'])
