@@ -160,7 +160,7 @@ def technical_page():
 
     cur.close()
 
-    return render_template('/var/www/html/technical/', rma_status=rma_status)
+    return render_template('/var/www/html/templates/', rma_status=rma_status)
 
 
 
