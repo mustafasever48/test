@@ -145,7 +145,7 @@ def check_rma_status():
 
 
 
-@app.route('/technical', methods=['GET'])
+@app.route('/testo', methods=['GET'])
 def technical_page():
     cur = mysql.cursor(dictionary=True)
 
