@@ -144,6 +144,7 @@ def check_rma_status():
 
 from flask import render_template
 
+
 @app.route('/technical', methods=['GET'])
 def technical_page():
     cur = mysql.cursor(dictionary=True)
@@ -160,7 +161,7 @@ def technical_page():
 
     cur.close()
 
-    return render_template('/var/www/html/templates/', rma_status=rma_status)
+    return render_template('technical.html', rma_status=rma_status)
 
 
 
