@@ -166,21 +166,19 @@ def check_rma_status():
 
 @app.route('/technical', methods=['GET'])
 def technical_page():
-   
-    rma_status = [
-        {
-            'RMA_ID': 1,
-            'Inspaction_Start_Date': '2023-01-01',
-            'Inspeciton_Completion_Date': '2023-01-10',
-            'Product_Defect': 'Defect 1',
-            'Check_Issue': 'Check Issue 1',
-            'Result_Issue': 'Result Issue 1',
-            'Product_ID': 123,
-            'Serial_Number': 'ABC123',
-            'Product_Name': 'Product 1'
-        },
-        
-    ]
+    cur = mysql.cursor(dictionary=True)
+
+    rma_status_query = '''
+        SELECT RMA.RMA_ID, RMA.Inspaction_Start_Date, RMA.Inspeciton_Completion_Date, RMA.Product_Defect,
+               RMA.Check_Issue, RMA.Result_Issue, RMA.Product_ID, Product.Serial_Number, Product.Product_Name
+        FROM RMA
+        LEFT JOIN Product ON RMA.Product_ID = Product.Product_ID;
+    '''
+
+    cur.execute(rma_status_query)
+    rma_status = cur.fetchall()
+
+    cur.close()
 
     return jsonify(rma_status)
 
