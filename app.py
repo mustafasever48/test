@@ -184,6 +184,14 @@ def technical_page():
 
     return jsonify(rma_status)
 
+@app.route('/technicians', methods=['GET'])
+def get_technicians():
+    cur = mysql.cursor(dictionary=True)
+    cur.execute('SELECT * FROM Technician;')
+    technicians = cur.fetchall()
+    cur.close()
+    return jsonify(technicians)
+
 
 
 
