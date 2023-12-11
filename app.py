@@ -122,25 +122,12 @@ def create_rma():
 
 @app.route("/check_rma_status", methods=['GET'])
 def check_rma_status():
-    rma_id = request.args.get('rma_id', '')
-    serial_number = request.args.get('serial_number', '')
-
     cur = mysql.cursor(dictionary=True)
-
-    rma_status_query = '''
-        SELECT RMA.RMA_ID, RMA.Inspaction_Start_Date, RMA.Inspeciton_Completion_Date, RMA.Product_Defect,
-               RMA.Check_Issue, RMA.Result_Issue, RMA.Product_ID, Product.Serial_Number, Product.Product_Name
-        FROM RMA
-        LEFT JOIN Product ON RMA.Product_ID = Product.Product_ID
-        WHERE RMA.RMA_ID = %s OR Product.Serial_Number = %s;
-    '''
-
-    cur.execute(rma_status_query, (rma_id, serial_number))
-    rma_status = cur.fetchall()
-
+    cur.execute('SELECT * FROM RMA;')
+    rma_data = cur.fetchall()
     cur.close()
 
-    return jsonify(rma_status)
+    return jsonify(rma_data)
 
 
 @app.route("/technical", methods=['GET'])
