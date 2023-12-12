@@ -212,7 +212,7 @@ def assign_technician():
 
 
 
-@app.route('/rmadetails', methods=['GET'])
+@app.route('/rma-details', methods=['GET'])
 def get_rmadetails():
     rma_id = request.args.get('rma_id')
 
@@ -245,7 +245,7 @@ def get_rmadetails():
     if not rma_details:
         return '{"error": "RMA details not found."}', 404
 
-    return render_template('rmadetails', rma_data=rma_details)
+    return render_template('rma-details', rma_data=rma_details)
 
 
 
