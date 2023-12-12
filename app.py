@@ -212,6 +212,41 @@ def assign_technician():
 
 
 
+@app.route('/rmadetails', methods=['GET'])
+def get_rmadetails():
+    rma_id = request.args.get('rma_id')
+
+    if not rma_id:
+        return '{"error": "RMA_ID is required."}', 400
+
+    cur = mysql.cursor(dictionary=True)
+
+    rma_details_query = '''
+        SELECT RMA.RMA_ID, RMA.Inspaction_Start_Date, RMA.Inspeciton_Completion_Date, RMA.Product_Defect,
+               RMA.Check_Issue, RMA.Result_Issue, RMA.Product_ID, Product.Serial_Number, Product.Product_Name,
+               Technician.Technician_ID,
+               Brand.Brand_Name, Brand.Brand_Adress, Brand.Brand_Website, Brand.Brand_Category,
+               Model.Model_Name, Model.Model_Category, Model.Model_Details,
+               Customer.Customer_Name, Customer.Customer_Address, Customer.Customer_Phone, Customer.Customer_Email
+        FROM RMA
+        LEFT JOIN Product ON RMA.Product_ID = Product.Product_ID
+        LEFT JOIN Technician ON RMA.Technician_ID = Technician.Technician_ID
+        LEFT JOIN Model ON Product.Model_ID = Model.Model_ID
+        LEFT JOIN Brand ON Model.Brand_ID = Brand.Brand_ID
+        LEFT JOIN Customer ON Product.Customer_ID = Customer.Customer_ID
+        WHERE RMA.RMA_ID = %s;
+    '''
+
+    cur.execute(rma_details_query, (rma_id,))
+    rma_details = cur.fetchone()
+
+    cur.close()
+
+    if not rma_details:
+        return '{"error": "RMA details not found."}', 404
+
+    return render_template('rmadetails', rma_data=rma_details)
+
 
 
 
