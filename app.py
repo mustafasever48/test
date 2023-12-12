@@ -167,7 +167,7 @@ def check_rma_status():
 @app.route('/technical', methods=['GET'])
 def technical_page():
     try:
-        with connection.cursor() as cursor:
+        with mysql.cursor() as cursor:
             rma_status_query = '''
                 SELECT RMA.RMA_ID, RMA.Inspaction_Start_Date, RMA.Inspeciton_Completion_Date, RMA.Product_Defect,
                     RMA.Check_Issue, RMA.Result_Issue, RMA.Product_ID, Product.Serial_Number, Product.Product_Name, RMA.Technician_ID
@@ -183,7 +183,7 @@ def technical_page():
 @app.route('/technicians', methods=['GET'])
 def get_technicians():
     try:
-        with connection.cursor() as cursor:
+        with mysql.cursor() as cursor:
             cursor.execute('SELECT * FROM Technician;')
             technicians = cursor.fetchall()
         return jsonify(technicians)
@@ -200,10 +200,10 @@ def assign_technician():
         if not rma_id or not technician_id:
             return jsonify({"error": "RMA_ID and Technician_ID are required."}), 400
 
-        with connection.cursor() as cursor:
+        with mysql.cursor() as cursor:
             update_query = 'UPDATE RMA SET Technician_ID = %s WHERE RMA_ID = %s;'
             cursor.execute(update_query, (technician_id, rma_id))
-            connection.commit()
+            mysql.commit()
 
         return jsonify({"Result": "Success"})
     except Exception as e:
