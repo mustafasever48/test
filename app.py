@@ -251,10 +251,10 @@ def get_rma_details():
 @app.route('/save_rma_details', methods=['POST'])
 def save_rma_details():
     try:
-        
         rma_id = request.form.get('rma_id')
         check_issue = request.form.get('check_issue')
         result_issue = request.form.get('result_issue')
+
         cur = mysql.cursor()
         insert_query = '''
             INSERT INTO RMA (RMA_ID, Check_Issue, Result_Issue)
@@ -263,11 +263,12 @@ def save_rma_details():
         cur.execute(insert_query, (rma_id, check_issue, result_issue))
         mysql.commit()
         cur.close()
+
         return jsonify({'success': 'RMA details saved successfully.'}), 200
     except Exception as e:
+        print(f"An error occurred: {str(e)}")  # Hata detaylarını ekrana yazdır
         return jsonify({'error': str(e)}), 500
-
-
+    
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port='8080', debug=True, ssl_context=('/etc/letsencrypt/live/msubuntu.northeurope.cloudapp.azure.com/cert.pem', '/etc/letsencrypt/live/msubuntu.northeurope.cloudapp.azure.com/privkey.pem'))
