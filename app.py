@@ -212,7 +212,7 @@ def assign_technician():
 
 
 
-@app.route('/rma_details', methods=['GET'])
+@app.route('/technical/rma_details', methods=['GET'])
 def get_rma_details():
     rma_id = request.args.get('rma_id')
 
