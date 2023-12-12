@@ -201,8 +201,7 @@ def assign_technician():
         return '{"error": "RMA_ID and Technician_ID are required."}', 400
 
     cur = mysql.cursor()
-    
-    
+
     update_query = 'UPDATE RMA SET Technician_ID = %s WHERE RMA_ID = %s;'
     cur.execute(update_query, (technician_id, rma_id))
     mysql.commit()
@@ -210,7 +209,6 @@ def assign_technician():
     cur.close()
 
     return '{"Result": "Success"}'
-
 
 
 
