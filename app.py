@@ -173,8 +173,7 @@ def technical_page():
                RMA.Check_Issue, RMA.Result_Issue, RMA.Product_ID, Product.Serial_Number, Product.Product_Name
         FROM RMA
         LEFT JOIN Product ON RMA.Product_ID = Product.Product_ID
-        LEFT JOIN Technician ON RMA.Technician_ID = Technician.Technician_ID
-        GROUP BY RMA.RMA_ID;
+      
     '''
     
     cur.execute(rma_status_query)
