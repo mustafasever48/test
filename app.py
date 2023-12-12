@@ -212,76 +212,70 @@ def assign_technician():
 
 
 
-from flask import Flask, render_template, jsonify, request
+@app.route('/technical/rma_details.html', methods=['GET'])
+def get_rma_details():
+    rmaId = request.args.get('rmaId')
 
-app = Flask(__name__)
+    if not rmaId:
+        return jsonify({'error': 'RMA_ID is required.'}), 400
 
-# ...
+    cur = mysql.cursor(dictionary=True)
 
-@app.route('/technical/rma_details.html', methods=['GET', 'POST'])
-def handle_rma_details():
-    if request.method == 'GET':
-        rmaId = request.args.get('rmaId')
+    rma_details_query = '''
+        SELECT RMA.RMA_ID, RMA.Inspaction_Start_Date, RMA.Inspeciton_Completion_Date, RMA.Product_Defect,
+               RMA.Check_Issue, RMA.Result_Issue, RMA.Product_ID, Product.Serial_Number, Product.Product_Name,
+               Technician.Technician_ID, Technician.Tech_Name,
+               Brand.Brand_Name, Brand.Brand_Adress, Brand.Brand_Website, Brand.Brand_Category,
+               Model.Model_Name, Model.Model_Category, Model.Model_Details,
+               Customer.Customer_Name, Customer.Customer_Address, Customer.Customer_Phone, Customer.Customer_Email
+        FROM RMA
+        LEFT JOIN Product ON RMA.Product_ID = Product.Product_ID
+        LEFT JOIN Technician ON RMA.Technician_ID = Technician.Technician_ID
+        LEFT JOIN Model ON Product.Model_ID = Model.Model_ID
+        LEFT JOIN Brand ON Model.Brand_ID = Brand.Brand_ID
+        LEFT JOIN Customer ON Product.Customer_ID = Customer.Customer_ID
+        WHERE RMA.RMA_ID = %s;
+    '''
 
-        if not rmaId:
-            return jsonify({'error': 'RMA_ID is required.'}), 400
+    cur.execute(rma_details_query, (rmaId,))
+    rma_details = cur.fetchone()
 
-        cur = mysql.cursor(dictionary=True)
+    cur.close()
 
-        rma_details_query = '''
-            SELECT RMA.RMA_ID, RMA.Inspaction_Start_Date, RMA.Inspeciton_Completion_Date, RMA.Product_Defect,
-                RMA.Check_Issue, RMA.Result_Issue, RMA.Product_ID, Product.Serial_Number, Product.Product_Name,
-                Technician.Technician_ID, Technician.Tech_Name,
-                Brand.Brand_Name, Brand.Brand_Adress, Brand.Brand_Website, Brand.Brand_Category,
-                Model.Model_Name, Model.Model_Category, Model.Model_Details,
-                Customer.Customer_Name, Customer.Customer_Address, Customer.Customer_Phone, Customer.Customer_Email
-            FROM RMA
-            LEFT JOIN Product ON RMA.Product_ID = Product.Product_ID
-            LEFT JOIN Technician ON RMA.Technician_ID = Technician.Technician_ID
-            LEFT JOIN Model ON Product.Model_ID = Model.Model_ID
-            LEFT JOIN Brand ON Model.Brand_ID = Brand.Brand_ID
-            LEFT JOIN Customer ON Product.Customer_ID = Customer.Customer_ID
-            WHERE RMA.RMA_ID = %s;
+    if not rma_details:
+        return jsonify({'error': 'RMA details not found.'}), 404
+
+    return jsonify(rma_details)
+
+
+from flask import jsonify, request
+
+@app.route('/technical/rma_details.html', methods=['POST'])
+def update_rma_details():
+    try:
+        rma_id = request.form.get('rma_id')
+        check_issue = request.form.get('check_issue')
+        result_issue = request.form.get('result_issue')
+
+        if not rma_id or not check_issue or not result_issue:
+            return jsonify({'error': 'RMA_ID, Check_Issue, and Result_Issue are required.'}), 400
+
+        cur = mysql.cursor()
+
+        update_query = '''
+            UPDATE RMA
+            SET Check_Issue = %s, Result_Issue = %s
+            WHERE RMA_ID = %s;
         '''
+        cur.execute(update_query, (check_issue, result_issue, rma_id))
 
-        cur.execute(rma_details_query, (rmaId,))
-        rma_details = cur.fetchone()
+        mysql.commit()
 
         cur.close()
 
-        if not rma_details:
-            return jsonify({'error': 'RMA details not found.'}), 404
-
-        return render_template('rma_details.html', rma_details=rma_details)
-
-    elif request.method == 'POST':
-        try:
-            rma_id = request.form.get('rma_id')
-            check_issue = request.form.get('check_issue')
-            result_issue = request.form.get('result_issue')
-
-            if not rma_id or not check_issue or not result_issue:
-                return jsonify({'error': 'RMA_ID, Check_Issue, and Result_Issue are required.'}), 400
-
-            cur = mysql.cursor()
-
-            update_query = '''
-                UPDATE RMA
-                SET Check_Issue = %s, Result_Issue = %s
-                WHERE RMA_ID = %s;
-            '''
-            cur.execute(update_query, (check_issue, result_issue, rma_id))
-
-            mysql.commit()
-
-            cur.close()
-
-            return jsonify({'success': 'RMA details updated successfully.'}), 200
-        except Exception as e:
-            return jsonify({'error': str(e)}), 500
-
-# ...
-
+        return jsonify({'success': 'RMA details updated successfully.'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 
     
