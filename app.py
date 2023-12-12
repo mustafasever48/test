@@ -213,8 +213,9 @@ def assign_technician():
 
 
 @app.route('/technical/rma-details.html', methods=['GET'])
-def technical_rma_details():
-    
+def get_rmadetails():
+     rma_id = request.args.get('rma_id')
+
     if not rma_id:
         return '{"error": "RMA_ID is required."}', 400
 
