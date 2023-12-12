@@ -212,12 +212,12 @@ def assign_technician():
 
 
 
-@app.route('/technical/rma-details.html', methods=['GET'])
-def get_rmadetails():
-     rma_id = request.args.get('rma_id')
+@app.route('/get_rma_details', methods=['GET'])
+def get_rma_details():
+    rma_id = request.args.get('rma_id')
 
     if not rma_id:
-        return '{"error": "RMA_ID is required."}', 400
+        return jsonify({'error': 'RMA_ID is required.'}), 400
 
     cur = mysql.cursor(dictionary=True)
 
@@ -243,10 +243,9 @@ def get_rmadetails():
     cur.close()
 
     if not rma_details:
-        return '{"error": "RMA details not found."}', 404
+        return jsonify({'error': 'RMA details not found.'}), 404
 
-    
-    return jsonify(rmadetails)
+    return jsonify(rma_details)
 
 
 
