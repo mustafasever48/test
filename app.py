@@ -245,7 +245,7 @@ def get_rmadetails():
     if not rma_details:
         return '{"error": "RMA details not found."}', 404
 
-    return render_template('rmadetails', rma_data=rma_details)
+    return jsonify(rma_details)
 
 
 
