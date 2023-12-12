@@ -250,7 +250,7 @@ def get_rma_details():
 
 from flask import jsonify, request
 
-@app.route('/update_rma_details', methods=['POST'])
+@app.route('//technical/rma_details.html', methods=['POST'])
 def update_rma_details():
     try:
         rma_id = request.form.get('rma_id')
