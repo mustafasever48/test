@@ -224,7 +224,7 @@ def get_rma_details():
     rma_details_query = '''
         SELECT RMA.RMA_ID, RMA.Inspaction_Start_Date, RMA.Inspeciton_Completion_Date, RMA.Product_Defect,
                RMA.Check_Issue, RMA.Result_Issue, RMA.Product_ID, Product.Serial_Number, Product.Product_Name,
-               Technician.Technician_ID,
+               Technician.Technician_ID, Technician.Technician_Name,
                Brand.Brand_Name, Brand.Brand_Adress, Brand.Brand_Website, Brand.Brand_Category,
                Model.Model_Name, Model.Model_Category, Model.Model_Details,
                Customer.Customer_Name, Customer.Customer_Address, Customer.Customer_Phone, Customer.Customer_Email
