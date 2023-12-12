@@ -248,26 +248,36 @@ def get_rma_details():
     return jsonify(rma_details)
 
 
-@app.route('/save_rma_details', methods=['POST'])
-def save_rma_details():
+
+@app.route('/update_rma_details', methods=['POST'])
+def update_rma_details():
     try:
         rma_id = request.form.get('rma_id')
         check_issue = request.form.get('check_issue')
         result_issue = request.form.get('result_issue')
 
+        if not rma_id or not check_issue or not result_issue:
+            return jsonify({'error': 'RMA_ID, Check_Issue, and Result_Issue are required.'}), 400
+
         cur = mysql.cursor()
-        insert_query = '''
-            INSERT INTO RMA (RMA_ID, Check_Issue, Result_Issue)
-            VALUES (%s, %s, %s)
+
+        update_query = '''
+            UPDATE RMA
+            SET Check_Issue = %s, Result_Issue = %s
+            WHERE RMA_ID = %s;
         '''
-        cur.execute(insert_query, (rma_id, check_issue, result_issue))
+        cur.execute(update_query, (check_issue, result_issue, rma_id))
+
         mysql.commit()
+
         cur.close()
 
-        return jsonify({'success': 'RMA details saved successfully.'}), 200
+        return jsonify({'success': 'RMA details updated successfully.'}), 200
     except Exception as e:
-        print(f"An error occurred: {str(e)}")  # Hata detaylarını ekrana yazdır
         return jsonify({'error': str(e)}), 500
+
+
+    
     
 
 if __name__ == "__main__":
