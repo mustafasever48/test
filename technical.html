@@ -4,57 +4,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Technical Personnel Page</title>
+    <title>Technical Page</title>
 </head>
 
 <body>
-    <br><br>
+    <h2>All RMA Status this is an index file under the technical file</h2>
 
-    <table border="1">
+    <table id="rmaTable">
         <thead>
             <tr>
                 <th>RMA ID</th>
                 <th>Inspaction Start Date</th>
-                <th>Inspeciton Completion Date</th>
+                <th>Inspection Completion Date</th>
                 <th>Product Defect</th>
                 <th>Check Issue</th>
                 <th>Result Issue</th>
                 <th>Product ID</th>
+                <th>Serial Number</th>
+                <th>Product Name</th>
                 <th>Technician ID</th>
-                <th>Return Shipping ID</th>
-                <th>Shipping Brand ID</th>
+                <th>Action</th>
             </tr>
         </thead>
-        <tbody id="rmaTableBody">
+        <tbody>
 
         </tbody>
     </table>
 
     <script>
-        function fetchData() {
-            fetch("https://msubuntu.northeurope.cloudapp.azure.com:8080/technical")
-                .then(response => response.json())
-                .then(data => {
-                    const rmaTableBody = document.getElementById("rmaTableBody");
-                    rmaTableBody.innerHTML = "";
+        fetch(`https://msubuntu.northeurope.cloudapp.azure.com:8080/technical`)
+            .then(response => response.json())
+            .then(data => {
+                const tableBody = document.querySelector('#rmaTable tbody');
+                data.forEach(rma => {
+                    const row = document.createElement('tr');
 
-                    data.forEach(row => {
-                        const newRow = document.createElement("tr");
-                        const cells = ["RMA_ID", "Inspaction_Start_Date", "Inspeciton_Completion_Date", "Product_Defect", "Check_Issue", "Result_Issue", "Product_ID", "Technician_ID", "Return_Shipping_ID", "Shipping_Brand_ID"];
+                    const formattedStartDate = new Date(rma['Inspaction_Start_Date']).toLocaleDateString();
 
-                        cells.forEach(cell => {
-                            const newCell = document.createElement("td");
-                            newCell.textContent = row[cell] !== null ? row[cell] : "";
-                            newRow.appendChild(newCell);
-                        });
-
-                        rmaTableBody.appendChild(newRow);
+                    Object.keys(rma).forEach(key => {
+                        const cell = document.createElement('td');
+                        cell.textContent = key === 'Inspaction_Start_Date' ? formattedStartDate : rma[key];
+                        row.appendChild(cell);
                     });
-                })
-                .catch(error => console.error('Error:', error));
-        }
 
-        fetchData();
+                    const technicianCell = document.createElement('td');
+                    const technicianSelect = document.createElement('select');
+                    technicianSelect.id = `technicianSelect_${rma['RMA_ID']}`;
+                    fetch(`https://msubuntu.northeurope.cloudapp.azure.com:8080/technicians`)
+                        .then(response => response.json())
+                        .then(technicians => {
+                            technicians.forEach(technician => {
+                                const option = document.createElement('option');
+                                option.value = technician['Technician_ID'];
+                                option.textContent = technician['Tech_Name'];
+                                technicianSelect.appendChild(option);
+                            });
+
+                            if (rma['Technician_ID']) {
+                                technicianSelect.value = rma['Technician_ID'];
+                            }
+                        })
+                        .catch(error => console.error('Technician data extraction error:', error));
+
+                    technicianCell.appendChild(technicianSelect);
+                    row.appendChild(technicianCell);
+
+                    const editButtonCell = document.createElement('td');
+                    const editButton = document.createElement('button');
+                    editButton.textContent = 'Edit Technician';
+                    editButton.addEventListener('click', () => {
+                        const selectedTechnicianId = technicianSelect.value;
+                        const rmaId = rma['RMA_ID'];
+
+                        fetch(`https://msubuntu.northeurope.cloudapp.azure.com:8080/technical`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ rmaId, selectedTechnicianId }),
+                        })
+                            .then(response => response.json())
+                            .then(responseData => console.log(responseData))
+                            .catch(error => console.error('Data submission error:', error));
+                    });
+
+                    editButtonCell.appendChild(editButton);
+                    row.appendChild(editButtonCell);
+
+                    tableBody.appendChild(row);
+                });
+            })
+            .catch(error => console.error('Data extraction error:', error));
     </script>
 </body>
 
