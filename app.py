@@ -212,11 +212,11 @@ def assign_technician():
 
 
 
-@app.route('/technical/rma_details', methods=['GET'])
+@app.route('/technical/rma_details.html', methods=['GET'])
 def get_rma_details():
-    rma_id = request.args.get('rma_id')
+    rmaId = request.args.get('rmaId')
 
-    if not rma_id:
+    if not rmaId:
         return jsonify({'error': 'RMA_ID is required.'}), 400
 
     cur = mysql.cursor(dictionary=True)
@@ -237,7 +237,7 @@ def get_rma_details():
         WHERE RMA.RMA_ID = %s;
     '''
 
-    cur.execute(rma_details_query, (rma_id,))
+    cur.execute(rma_details_query, (rmaId,))
     rma_details = cur.fetchone()
 
     cur.close()
