@@ -166,50 +166,48 @@ def check_rma_status():
 
 @app.route('/technical', methods=['GET'])
 def technical_page():
-    cur = mysql.cursor(dictionary=True)
-
-    rma_status_query = '''
-        SELECT RMA.RMA_ID, RMA.Inspaction_Start_Date, RMA.Inspeciton_Completion_Date, RMA.Product_Defect,
-               RMA.Check_Issue, RMA.Result_Issue, RMA.Product_ID, Product.Serial_Number, Product.Product_Name
-        FROM RMA
-        LEFT JOIN Product ON RMA.Product_ID = Product.Product_ID
-      
-    '''
-    
-    cur.execute(rma_status_query)
-    rma_status = cur.fetchall()
-
-    cur.close()
-
-    return jsonify(rma_status)
+    try:
+        with connection.cursor() as cursor:
+            rma_status_query = '''
+                SELECT RMA.RMA_ID, RMA.Inspaction_Start_Date, RMA.Inspeciton_Completion_Date, RMA.Product_Defect,
+                    RMA.Check_Issue, RMA.Result_Issue, RMA.Product_ID, Product.Serial_Number, Product.Product_Name, RMA.Technician_ID
+                FROM RMA
+                LEFT JOIN Product ON RMA.Product_ID = Product.Product_ID;
+            '''
+            cursor.execute(rma_status_query)
+            rma_status = cursor.fetchall()
+        return jsonify(rma_status)
+    except Exception as e:
+        return jsonify({'error': str(e)})
 
 @app.route('/technicians', methods=['GET'])
 def get_technicians():
-    cur = mysql.cursor(dictionary=True)
-    cur.execute('SELECT * FROM Technician;')
-    technicians = cur.fetchall()
-    cur.close()
-    return jsonify(technicians)
-
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute('SELECT * FROM Technician;')
+            technicians = cursor.fetchall()
+        return jsonify(technicians)
+    except Exception as e:
+        return jsonify({'error': str(e)})
 
 @app.route('/assign_technician', methods=['POST'])
 def assign_technician():
-    rma_id = request.form.get('rma_id')
-    technician_id = request.form.get('technician_id')
+    try:
+        data = request.json
+        rma_id = data.get('rmaId')
+        technician_id = data.get('selectedTechnicianId')
 
-    if not rma_id or not technician_id:
-        return '{"error": "RMA_ID and Technician_ID are required."}', 400
+        if not rma_id or not technician_id:
+            return jsonify({"error": "RMA_ID and Technician_ID are required."}), 400
 
-    cur = mysql.cursor()
-    
-    
-    update_query = 'UPDATE RMA SET Technician_ID = %s WHERE RMA_ID = %s;'
-    cur.execute(update_query, (technician_id, rma_id))
-    mysql.commit()
+        with connection.cursor() as cursor:
+            update_query = 'UPDATE RMA SET Technician_ID = %s WHERE RMA_ID = %s;'
+            cursor.execute(update_query, (technician_id, rma_id))
+            connection.commit()
 
-    cur.close()
-
-    return '{"Result": "Success"}'
+        return jsonify({"Result": "Success"})
+    except Exception as e:
+        return jsonify({'error': str(e)})
 
 
 
