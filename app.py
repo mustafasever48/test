@@ -223,7 +223,7 @@ def get_rma_details():
         return jsonify({'error': 'RMA_ID is required.'}), 400
 
     cur = mysql.cursor(dictionary=True)
-    current_date = datetime.now().strftime('%Y-%m-%d')
+    
 
     rma_details_query = '''
         SELECT RMA.RMA_ID, RMA.Inspaction_Start_Date, RMA.Inspeciton_Completion_Date, RMA.Product_Defect,
