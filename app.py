@@ -248,6 +248,8 @@ def get_rma_details():
     return jsonify(rma_details)
 
 
+
+
 @app.route('/update_rma', methods=['POST'])
 def update_rma_details():
     try:
@@ -271,9 +273,11 @@ def update_rma_details():
 
         cur.close()
 
-        return jsonify({'success': 'RMA details updated successfully.'}), 200
+        
+        return render_template('rma-details.html', rma_id=rma_id, check_issue=check_issue, result_issue=result_issue)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
 
 
 
