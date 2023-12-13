@@ -119,7 +119,7 @@ def create_rma():
 
     product_id = product_data[0]
 
-    current_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    current_date = datetime.now().strftime('%Y-%m-%d')
 
     rma_query = 'INSERT INTO RMA (Inspaction_Start_Date, Check_Issue, Product_ID) VALUES (%s, %s, %s);'
     cur.execute(rma_query, (current_date, issue_description, product_id))
