@@ -278,7 +278,31 @@ def update_rma_details():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/update_product_defect', methods=['POST'])
+def update_product_defect():
+    try:
+        rma_id = request.form.get('rma_id')
+        product_defect = request.form.get('product_defect')
 
+        if not rma_id or not product_defect:
+            return jsonify({'error': 'RMA_ID and Product_Defect are required.'}), 400
+
+        cur = mysql.cursor()
+
+        update_query = '''
+            UPDATE RMA
+            SET Product_Defect = %s
+            WHERE RMA_ID = %s;
+        '''
+        cur.execute(update_query, (product_defect, rma_id))
+
+        mysql.commit()
+
+        cur.close()
+
+        return jsonify({'success': 'Product Defect updated successfully.'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 
 
