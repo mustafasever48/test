@@ -304,6 +304,32 @@ def update_product_defect():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/update_inspection_completion_date', methods=['POST'])
+def update_inspection_completion_date():
+    try:
+        rma_id = request.form.get('rma_id')
+        completion_date = request.form.get('completion_date')
+
+        if not rma_id or not completion_date:
+            return jsonify({'error': 'RMA_ID and Completion Date are required.'}), 400
+
+        cur = mysql.cursor()
+
+        update_query = '''
+            UPDATE RMA
+            SET Inspeciton_Completion_Date = %s
+            WHERE RMA_ID = %s;
+        '''
+        cur.execute(update_query, (completion_date, rma_id))
+
+        mysql.commit()
+
+        cur.close()
+
+        return jsonify({'success': 'Inspection Completion Date updated successfully.'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 
 
     
