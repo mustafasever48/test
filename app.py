@@ -314,7 +314,7 @@ def update_inspection_completion_date():
             return jsonify({'error': 'RMA_ID and Completion Date are required.'}), 400
 
         cur = mysql.cursor()
-
+        current_date = datetime.now().strftime('%Y-%m-%d')
         update_query = '''
             UPDATE RMA
             SET Inspeciton_Completion_Date = %s
