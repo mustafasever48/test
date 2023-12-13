@@ -33,7 +33,10 @@ dictConfig({
 })
 app = Flask(__name__)
 CORS(app)
-
+@app.teardown_request
+def teardown_request(exception):
+    if hasattr(app, 'mysql') and app.mysql:
+        app.mysql.close()
 @app.route("/add", methods=['POST'])
 def add():
     if request.method == 'POST':
