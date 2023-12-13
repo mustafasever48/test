@@ -109,7 +109,6 @@
                                     assignButton.addEventListener("click", function () {
                                         const selectedTechnicianId = technicianSelect.value;
                                         const rmaId = rma['RMA_ID'];
-
                                         fetch(`https://msubuntu.northeurope.cloudapp.azure.com:8080/assign_technician`, {
                                             method: 'POST',
                                             headers: {
@@ -120,7 +119,7 @@
                                             .then(response => response.json())
                                             .then(responseData => {
                                                 assignCell.textContent = selectedTechnicianId;
-                                                assignButton.style.display = "none";  
+                                                assignButton.style.display = "none";
                                             })
                                             .catch(error => console.error('Data submission error:', error));
                                     });
@@ -142,7 +141,7 @@
                         viewDetailsButton.classList.add('view-details-button');
                         viewDetailsButton.textContent = 'View Details';
                         viewDetailsButton.addEventListener('click', function () {
-                            window.location.href = `rma-details.html?rmaId=${rma['RMA_ID']}`;
+                            window.location.href = `rma-details?rmaId=${rma['RMA_ID']}`;
                         });
 
                         viewDetailsCell.appendChild(viewDetailsButton);
