@@ -74,7 +74,6 @@
                     const rmaDetailsHtml = createRmaDetailsHtml(data);
                     document.getElementById('rmaDetailsContainer').innerHTML = rmaDetailsHtml;
 
-
                     document.getElementById('productDefect').value = data['Product_Defect'];
                     document.getElementById('resultIssue').value = data['Result_Issue'];
                 })
@@ -90,10 +89,9 @@
                             <td>${data['Inspaction_Start_Date']}</td>
                         </tr>
                         <tr>
-                            <th>Inspection Completion Date</th>
-                            <td><input type="date" name="completionDate" value="${data['Inspeciton_Completion_Date']}"></td>
+                             <th>Inspection Completion Date</th>
+                          <td><button class="updateButton" onclick="updateCompletionDate()">Update</button></td>
                         </tr>
-                        <tr>
                             <th>Product Defect</th>
                             <td><textarea name="productDefect" id="productDefect">${data['Product_Defect']}</textarea> <button class="updateButton" onclick="updateProductDefect()">Update</button></td>
                         </tr>
@@ -133,18 +131,14 @@
             return html;
         }
 
-
-
         function updateResultIssue() {
             const rmaId = new URLSearchParams(window.location.search).get('rmaId');
             const resultIssue = document.getElementById('resultIssue').value;
-
 
             if (!resultIssue.trim()) {
                 alert('Result Issue cannot be empty.');
                 return;
             }
-
 
             fetch('https://msubuntu.northeurope.cloudapp.azure.com:8080/update_rma', {
                 method: 'POST',
@@ -152,22 +146,17 @@
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
                 body: `rma_id=${rmaId}&result_issue=${resultIssue}`,
-
             })
                 .then(response => {
-
                     if (!response.ok) {
                         throw new Error(`HTTP error! Status: ${response.status}`);
                     }
                     return response.json();
                 })
                 .then(data => {
-
                     if (data.error) {
                         throw new Error(data.error);
                     }
-
-
                     alert(`Updated Result Issue: ${resultIssue}`);
                 })
                 .catch(error => {
@@ -175,16 +164,15 @@
                     alert('An error occurred while updating Result Issue.');
                 });
         }
+
         function updateProductDefect() {
             const rmaId = new URLSearchParams(window.location.search).get('rmaId');
             const productDefect = document.getElementById('productDefect').value;
-
 
             if (!productDefect.trim()) {
                 alert('Product Defect cannot be empty.');
                 return;
             }
-
 
             fetch('https://msubuntu.northeurope.cloudapp.azure.com:8080/update_product_defect', {
                 method: 'POST',
@@ -194,19 +182,15 @@
                 body: `rma_id=${rmaId}&product_defect=${productDefect}&product_defecet=`,
             })
                 .then(response => {
-
                     if (!response.ok) {
                         throw new Error(`HTTP error! Status: ${response.status}`);
                     }
                     return response.json();
                 })
                 .then(data => {
-
                     if (data.error) {
                         throw new Error(data.error);
                     }
-
-
                     alert(`Updated Product Defect: ${productDefect}`);
                 })
                 .catch(error => {
@@ -215,6 +199,34 @@
                 });
         }
 
+        function updateCompletionDate() {
+            const rmaId = new URLSearchParams(window.location.search).get('rmaId');
+            const currentDateTime = new Date().toISOString().slice(0, 19).replace("T", " ");
+
+            fetch('https://msubuntu.northeurope.cloudapp.azure.com:8080/update_inspection_completion_date', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `rma_id=${rmaId}&completion_date=${currentDateTime}`,
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.error) {
+                        throw new Error(data.error);
+                    }
+                    alert(`Updated Inspection Completion Date: ${currentDateTime}`);
+                })
+                .catch(error => {
+                    console.error('Error:', error.message);
+                    alert('An error occurred while updating Inspection Completion Date.');
+                });
+        }
     </script>
 </body>
 
