@@ -250,7 +250,7 @@ def get_rma_details():
 
 
 
-@app.route('', methods=['POST'])
+@app.route('/update', methods=['POST'])
 def update_rma_details():
     try:
         rma_id = request.form.get('rma_id')
