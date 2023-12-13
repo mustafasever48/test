@@ -254,20 +254,20 @@ def get_rma_details():
 def update_rma_details():
     try:
         rma_id = request.form.get('rma_id')
-        check_issue = request.form.get('check_issue')
+        
         result_issue = request.form.get('result_issue')
 
-        if not rma_id or not check_issue or not result_issue:
-            return jsonify({'error': 'RMA_ID, Check_Issue, and Result_Issue are required.'}), 400
+        if not rma_id or not result_issue:
+            return jsonify({'error': 'RMA_ID are required.'}), 400
 
         cur = mysql.cursor()
 
         update_query = '''
             UPDATE RMA
-            SET Check_Issue = %s, Result_Issue = %s
+            Result_Issue = %s
             WHERE RMA_ID = %s;
         '''
-        cur.execute(update_query, (check_issue, result_issue, rma_id))
+        cur.execute(update_query, (result_issue, rma_id))
 
         mysql.commit()
 
