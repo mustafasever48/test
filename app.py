@@ -264,7 +264,7 @@ def update_rma_details():
 
         update_query = '''
             UPDATE RMA
-            Result_Issue = %s
+            SET Result_Issue = %s
             WHERE RMA_ID = %s;
         '''
         cur.execute(update_query, (result_issue, rma_id))
